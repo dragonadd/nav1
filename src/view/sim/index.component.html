@@ -52,7 +52,6 @@
     >
       {{ item.title }}
     </span>
-    <!-- More -->
     <app-web-more-menu
       *ngIf="commonService.overIndex < commonService.navs().length"
       [data]="commonService.navs().slice(commonService.overIndex, 99999)"
@@ -152,4 +151,5 @@
   [collapsed]="commonService.collapsed"
 />
 
-<div class="sim-bg dark-bg"></div>
+<!-- 保留sim-bg，但给它加透明背景，不盖住渐变 -->
+<div class="sim-bg dark-bg" style="background: transparent !important;"></div>
