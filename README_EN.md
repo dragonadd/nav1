@@ -87,6 +87,53 @@ See [Authentication details](docs/authentication.md) for formats, cache behavior
 
 ## Build and deployment
 
+### Before deployment
+
+1. Fork the project or upload this source to your own Git repository. Commit the source and `pnpm-lock.yaml`; exclude `node_modules` and `dist`.
+2. Set `gitRepoUrl` to your repository and `branch` to the deployed source branch, usually `main`. Keep `address: ''` for static hosting. Configure your image repository and create its branch beforehand if needed.
+3. Set `hashMode: true` for GitHub Pages, or usually `false` for the other platforms. Commit the configuration before importing the repository.
+
+### Git-connected hosting
+
+These platforms rebuild automatically when admin changes create a Git commit.
+
+| Platform                                         | Steps                                                                                                                                                                                                   |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Netlify](https://app.netlify.com/)              | Create a site from Git, authorize your repository and select the source branch. Keep the root `netlify.toml` settings and deploy.                                                                       |
+| [Vercel](https://vercel.com/new)                 | Import the repository, use its root as Root Directory, set Build Command to `pnpm run build` and Output Directory to `dist/browser`. Match Production Branch to YAML `branch`, then deploy.             |
+| [Cloudflare Pages](https://dash.cloudflare.com/) | Create a **Pages** project under Workers & Pages and connect Git. Select the repository and production branch, choose no framework preset, use `pnpm run build` and output `dist/browser`, then deploy. |
+
+Use Node.js **22.12+ or 24+**. If an install command is requested, use `pnpm install --frozen-lockfile`. Netlify already specifies Node 22; select the Node version in Vercel settings, or set `NODE_VERSION=22.12.0` in Cloudflare Pages. Check the platform's default domain before adding a custom domain.
+
+### GitHub Pages
+
+This copy has no automatic deployment workflow. To publish manually:
+
+1. Clone your repository, confirm Git `origin` points to it, and commit `hashMode: true`.
+2. Run in the repository root:
+
+   ```bash
+   pnpm install --frozen-lockfile
+   pnpm run build-gh-pages
+   pnpm dlx gh-pages -d dist/browser --nojekyll
+   ```
+
+   The last command temporarily runs the publishing tool and pushes the output to `origin`'s `gh-pages` branch. Your local Git must have push access.
+
+3. In **Settings → Pages**, select **Deploy from a branch**, branch `gh-pages` and `/ (root)`. Wait for publication, then visit `https://USER.github.io/REPO/`.
+
+After admin changes, run `git pull`, rebuild and publish again. For automatic updates, configure a [GitHub Actions Pages workflow](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
+
+### First use and troubleshooting
+
+Open `/system`, or `/#/system` on GitHub Pages, keeping any project-path prefix. Log in with a writable repository Token, then configure a password under **Site settings → Login password management**. Changes take effect after the same branch deploys successfully.
+
+- **Refreshing admin returns 404:** check SPA fallback for History routing; use Hash routing on GitHub Pages.
+- **Updates are missing:** match the deployed source branch to YAML `branch` and check the latest build. Manual publishing requires rebuilding and uploading again.
+- **Image uploads fail:** create the image repository and branch, and grant the Token write access.
+
+### Local build and output
+
 ```bash
 pnpm run build
 # GitHub Pages, with hashMode: true
@@ -95,16 +142,7 @@ pnpm run build-gh-pages
 
 Publish **`dist/browser`**. The build generates the page template and SEO content. Valid encrypted credentials are published separately at `data/auth.json`; blank / removed credentials are cleaned up, while plaintext or damaged credentials stop the build.
 
-| Platform         | Build command             | Output         | Notes                                                                      |
-| ---------------- | ------------------------- | -------------- | -------------------------------------------------------------------------- |
-| Netlify          | `pnpm run build`          | `dist/browser` | Existing `netlify.toml` includes SPA fallback and credential cache headers |
-| Vercel           | `pnpm run build`          | `dist/browser` | Existing `vercel.json`                                                     |
-| Cloudflare Pages | `pnpm run build`          | `dist/browser` | Node 22.12+; publishes `public/_headers`                                   |
-| GitHub Pages     | `pnpm run build-gh-pages` | `dist/browser` | Hash routing; publish the generated files to the configured Pages source   |
-
 The deployed source branch must match YAML `branch`. Saving a password completes a Git commit, not deployment; a timestamp cannot fetch a version that has not been published.
-
-**This source copy does not include a GitHub Actions deployment workflow.** Configure one or publish manually, then select the real source under Settings → Pages. Forking alone does not automatically create a `gh-pages` deployment.
 
 The frontend retains self-hosted API compatibility, but this directory does not include server code, a Dockerfile or PM2 startup scripts. The `address` mode needs a separately supplied compatible API server.
 

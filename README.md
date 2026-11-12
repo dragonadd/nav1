@@ -95,6 +95,53 @@ Token 仅写入当前标签页的 `sessionStorage`。刷新保留登录，退出
 
 ## 构建与部署
 
+### 部署前准备
+
+1. Fork 项目或把当前源码上传到自己的 Git 仓库，提交源码和 `pnpm-lock.yaml`，不要上传 `node_modules`、`dist`。
+2. 修改 `nav.config.yaml`：`gitRepoUrl` 填自己的仓库，`branch` 填实际部署分支（通常是 `main`），静态部署保持 `address: ''`。使用自己的图床时，同时配置 `imageRepoUrl` 并提前创建图床分支。
+3. GitHub Pages 设置 `hashMode: true`，其他平台通常用 `false`。提交修改，再按下面的平台步骤部署。
+
+### 静态托管平台
+
+Netlify、Vercel 和 Cloudflare Pages 都可以连接 Git 仓库，后续后台保存触发 Git 提交时，平台会自动重新构建。
+
+| 平台                                             | 操作步骤                                                                                                                                                         |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Netlify](https://app.netlify.com/)              | 新建站点，选择从 Git 导入并授权自己的仓库；选择部署分支，保留根目录 `netlify.toml` 的构建设置；点击部署。                                                        |
+| [Vercel](https://vercel.com/new)                 | 导入自己的仓库；项目根目录保持仓库根目录，构建命令填 `pnpm run build`，输出目录填 `dist/browser`；确认 Production Branch 与 YAML 的 `branch` 一致后部署。        |
+| [Cloudflare Pages](https://dash.cloudflare.com/) | 在 Workers & Pages 中创建 **Pages** 项目并连接 Git；选择仓库与生产分支，框架预设选“无”，构建命令填 `pnpm run build`，构建输出目录填 `dist/browser`；保存并部署。 |
+
+构建环境使用 Node.js **22.12+ 或 24+**；安装命令可设为 `pnpm install --frozen-lockfile`。Netlify 已在配置中指定 Node 22；Vercel 在项目设置选择 Node 版本；Cloudflare Pages 可添加环境变量 `NODE_VERSION=22.12.0`。部署成功后，先打开平台提供的默认域名确认首页正常，再添加自己的域名。
+
+### GitHub Pages
+
+当前副本没有自动发布工作流，可以先手动发布：
+
+1. 把仓库克隆到本地，确认 Git 的 `origin` 指向自己的仓库，设置 `hashMode: true` 并提交。
+2. 在仓库根目录执行：
+
+   ```bash
+   pnpm install --frozen-lockfile
+   pnpm run build-gh-pages
+   pnpm dlx gh-pages -d dist/browser --nojekyll
+   ```
+
+   最后一条命令临时运行发布工具，将产物推送到 `origin` 的 `gh-pages` 分支，需要本机 Git 有该仓库的推送权限。
+
+3. 打开仓库 **Settings → Pages**，Source 选择 **Deploy from a branch**，分支选择 `gh-pages`，目录选择 `/ (root)`。等待发布完成后访问 `https://用户名.github.io/仓库名/`。
+
+这种方式需要手动更新：后台保存后，先在本地 `git pull`，再重新构建并执行发布命令。需要每次保存后自动更新，可另行配置 [GitHub Actions 发布工作流](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)。
+
+### 首次使用与常见问题
+
+部署成功后打开 `/system`，GitHub Pages 使用 `/#/system`，子目录站点保留仓库名前缀。首次用具有仓库写权限的 Token 登录，再到 **系统设置 → 登录密码管理** 设置密码。后台修改和密码设置都需要等待该分支重新部署成功后生效。
+
+- **首页能打开，刷新后台出现 404**：检查 History 路由的 SPA 回退；GitHub Pages 使用 Hash 路由。
+- **部署成功但看不到更新**：确认平台部署分支与 YAML `branch` 一致，再检查最新构建是否成功；手动发布需要重新构建上传。
+- **图片无法上传**：确认图床仓库、图床分支已经存在，且 Token 有相应写权限。
+
+### 本地构建与发布目录
+
 ```bash
 # 普通静态托管
 pnpm run build
@@ -105,16 +152,7 @@ pnpm run build-gh-pages
 
 发布目录均为 **`dist/browser`**。构建会生成页面模板和 SEO 内容；有效登录凭证单独发布到 `data/auth.json`。空白 / 移除凭证会清理资源，明文或损坏的凭证会阻止构建。
 
-| 平台             | 构建命令                  | 发布目录       | 说明                                               |
-| ---------------- | ------------------------- | -------------- | -------------------------------------------------- |
-| Netlify          | `pnpm run build`          | `dist/browser` | 根目录已有 `netlify.toml`，含 SPA 回退和凭证缓存头 |
-| Vercel           | `pnpm run build`          | `dist/browser` | 根目录已有 `vercel.json`                           |
-| Cloudflare Pages | `pnpm run build`          | `dist/browser` | 使用 Node 22.12+；`public/_headers` 会随构建发布   |
-| GitHub Pages     | `pnpm run build-gh-pages` | `dist/browser` | 使用 Hash 路由，把构建产物发布到 Pages 来源        |
-
 连接 Git 仓库时，部署分支应与 `nav.config.yaml` 的 `branch` 一致。密码保存只完成 Git 提交，必须等该分支部署成功后才生效；请求时间戳不能提前读取尚未发布的文件。
-
-**当前源码副本没有自带 GitHub Actions 发布工作流。** 使用 GitHub Pages 时，需要自行配置工作流或手动发布构建产物，再在仓库 Settings → Pages 选择实际发布来源；不能假定 Fork 后会自动创建 `gh-pages`。
 
 前端保留原有自有服务器 API 兼容入口，但当前目录没有服务器、Dockerfile 或 PM2 启动脚本。要使用 `address` 模式，需要另外提供兼容 API 服务；普通静态部署保持 `address` 为空。
 
