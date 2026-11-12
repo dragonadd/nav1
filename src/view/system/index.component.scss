@@ -1,0 +1,241 @@
+:host {
+  display: block;
+}
+.system-layout {
+  --admin-sidebar-width: 232px;
+  min-height: 100dvh;
+  background: #f4f6fa;
+  &.sidebar-collapsed {
+    --admin-sidebar-width: 0px;
+  }
+}
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  background: #14233b;
+  overflow: hidden;
+}
+:host ::ng-deep .sidebar .ant-layout-sider-children {
+  display: flex;
+  flex-direction: column;
+}
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 28px 22px 26px;
+  color: #fff;
+  white-space: nowrap;
+}
+.brand-mark {
+  display: grid;
+  place-items: center;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  color: #fff;
+  background: #2563eb;
+  font-size: 20px;
+}
+.sidebar-brand strong {
+  display: block;
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+}
+.sidebar-brand div > span {
+  display: block;
+  margin-top: 3px;
+  color: #a2b4cf;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+.sidebar-navigation {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.sidebar-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 24px;
+  color: #a2b4cf;
+  border-top: 1px solid #ffffff12;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.sidebar-footer strong {
+  color: #dce7f7;
+  font-weight: 500;
+}
+.inner-layout {
+  min-width: 0;
+  background: transparent;
+}
+.admin-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: 76px;
+  padding: 0 28px;
+  background: #fff;
+  border-bottom: 1px solid #e5eaf2;
+  line-height: normal;
+}
+.header-location,
+.header-actions,
+.header-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.header-breadcrumb {
+  color: #64748b;
+  white-space: nowrap;
+}
+.header-breadcrumb strong {
+  color: #26364d;
+  font-weight: 500;
+}
+.breadcrumb-divider {
+  color: #cbd5e1;
+}
+.menu-toggle {
+  flex-shrink: 0;
+}
+.branch-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 11px;
+  border: 1px solid #e4eaf2;
+  border-radius: 7px;
+  color: #5b6b83;
+  font-size: 12px;
+}
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #3b82f6;
+}
+.content {
+  min-width: 0;
+  padding: 30px 28px 110px;
+}
+.admin-page-heading {
+  margin-bottom: 24px;
+}
+.admin-page-heading h1 {
+  margin: 0;
+  color: #1c2b43;
+  font-size: 27px;
+  line-height: 1.4;
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+.admin-page-heading p {
+  margin: 8px 0 0;
+  color: #64748b;
+  line-height: 1.7;
+}
+.admin-page {
+  min-width: 0;
+  padding: 26px;
+  background: #fff;
+  border: 1px solid #e5eaf2;
+  border-radius: 14px;
+  box-shadow: 0 3px 14px #1e293b04;
+}
+.fixed-center {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 25;
+  transform: translate(-50%, -50%);
+}
+.sidebar-mask {
+  display: none;
+}
+.admin-login-stage {
+  position: fixed;
+  inset: 0;
+  background: #f4f6fa;
+}
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 32px;
+  color: #1c2b43;
+}
+.login-brand strong {
+  font-size: 18px;
+  font-weight: 650;
+}
+.login-brand p {
+  margin: 3px 0 0;
+  color: #64748b;
+  font-size: 12px;
+}
+@media (max-width: 991px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    z-index: 40;
+    box-shadow: 8px 0 32px #14233b26;
+  }
+  .sidebar-mask {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 35;
+    border: 0;
+    background: #0f172a66;
+  }
+}
+@media (max-width: 767px) {
+  .admin-header {
+    height: 64px;
+    padding: 0 16px;
+    gap: 8px;
+  }
+  .header-location,
+  .header-actions,
+  .header-breadcrumb {
+    gap: 8px;
+  }
+  .header-breadcrumb > span {
+    display: none;
+  }
+  .branch-badge,
+  .header-action-label {
+    display: none;
+  }
+  .content {
+    padding: 24px 16px 100px;
+  }
+  .admin-page-heading {
+    margin-bottom: 20px;
+  }
+  .admin-page-heading h1 {
+    font-size: 24px;
+  }
+  .admin-page {
+    padding: 18px;
+    border-radius: 12px;
+  }
+  .login-brand {
+    margin: 22px;
+  }
+}

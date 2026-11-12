@@ -1,0 +1,101 @@
+<section class="password-manager">
+  <div class="password-manager-heading">
+    <div>
+      <p class="section-kicker">{{ $t('_adminSecurity') }}</p>
+      <h2>{{ $t('_authPasswordManagement') }}</h2>
+    </div>
+    <span
+      *ngIf="status === 'set' || status === 'unset'"
+      class="configuration-badge"
+      [class.is-configured]="status === 'set'"
+      >{{
+        $t(status === 'set' ? '_adminConfigured' : '_adminNotConfigured')
+      }}</span
+    >
+  </div>
+  <p>{{ $t('_authBranch') }}: {{ branch }}</p>
+  <p>{{ $t('_authPasswordDescription') }}</p>
+  <p *ngIf="loading" role="status">{{ $t('_authReading') }}</p>
+  <p *ngIf="status === 'set'">{{ $t('_authPasswordSet') }}</p>
+  <p *ngIf="status === 'unset'">{{ $t('_authPasswordUnset') }}</p>
+  <p *ngIf="status === 'invalid'" role="alert" class="text-red-600">
+    {{ $t('_authPasswordInvalid') }}
+  </p>
+  <form (ngSubmit)="save()" class="max-w-lg">
+    <label for="nav-new-login-password">{{ $t('_authNewPassword') }}</label>
+    <input
+      nz-input
+      id="nav-new-login-password"
+      name="newLoginPassword"
+      type="password"
+      autocomplete="off"
+      [(ngModel)]="newPassword"
+      [disabled]="loading || busy"
+    />
+    <label for="nav-confirm-login-password" class="mt-3 block">{{
+      $t('_authConfirmPassword')
+    }}</label>
+    <input
+      nz-input
+      id="nav-confirm-login-password"
+      name="confirmLoginPassword"
+      type="password"
+      autocomplete="off"
+      [(ngModel)]="confirmPassword"
+      [disabled]="loading || busy"
+    />
+    <p *ngIf="passwordError" role="alert" class="text-red-600">
+      {{ passwordError }}
+    </p>
+    <p
+      id="nav-auth-management-error"
+      *ngIf="error"
+      role="alert"
+      class="text-red-600"
+    >
+      {{ error }}
+    </p>
+    <p class="!my-3 text-xs text-gray-500">{{ $t('_authSecurityHint') }}</p>
+    <div class="flex flex-wrap gap-2">
+      <button
+        nz-button
+        nzType="primary"
+        type="submit"
+        data-auth-action="save"
+        [disabled]="!canSave"
+        [nzLoading]="busy"
+      >
+        {{ $t('_authSavePassword') }}
+      </button>
+      <button
+        nz-button
+        type="button"
+        data-auth-action="reload"
+        (click)="load()"
+        [disabled]="loading || busy"
+      >
+        {{ $t('_authRetry') }}
+      </button>
+      <button
+        nz-button
+        nzDanger
+        type="button"
+        data-auth-action="remove"
+        nz-popconfirm
+        [nzPopconfirmTitle]="$t('_authRemoveConfirm')"
+        (nzOnConfirm)="remove()"
+        [disabled]="loading || busy || !status || status === 'unset'"
+      >
+        {{ $t('_authRemovePassword') }}
+      </button>
+    </div>
+  </form>
+  <p
+    id="nav-auth-deploy-message"
+    *ngIf="deployMessage"
+    role="status"
+    class="!mt-3"
+  >
+    {{ deployMessage }}
+  </p>
+</section>

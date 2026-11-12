@@ -1,0 +1,41 @@
+<div class="info-grid">
+  <section class="info-card" *ngIf="!isSelfDevelop">
+    <h2>{{ $t('_adminRepoDetails') }}</h2>
+    <dl>
+      <div class="info-line">
+        <dt>Git</dt>
+        <dd>
+          <a
+            [href]="config.gitRepoUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            >{{ config.gitRepoUrl }}</a
+          >
+        </dd>
+      </div>
+      <div class="info-line">
+        <dt>{{ $t('_devBranch') }}</dt>
+        <dd>{{ config.branch }}</dd>
+      </div>
+      <div class="info-line">
+        <dt>{{ $t('_prevDevTime') }}</dt>
+        <dd>{{ date }}</dd>
+      </div>
+      <div class="info-line">
+        <dt>Token</dt>
+        <dd>{{ token }}</dd>
+      </div>
+    </dl>
+  </section>
+  <section class="info-card">
+    <h2>{{ $t('_adminVersionDetails') }}</h2>
+    <div class="version-number">v{{ version }}</div>
+    <p>{{ $t('_curVer') }}</p>
+    <a
+      href="https://github.com/xjh22222228/nav/releases"
+      target="_blank"
+      rel="noopener noreferrer"
+      >{{ $t('_adminViewReleases') }} →</a
+    >
+  </section>
+</div>

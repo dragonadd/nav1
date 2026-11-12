@@ -1,0 +1,106 @@
+<nz-modal
+  nzWrapClassName="admin-login-modal"
+  [nzCentered]="true"
+  [(nzVisible)]="visible"
+  [nzTitle]="$t('_authAdminLogin')"
+  [nzOkLoading]="submitting"
+  [nzOkDisabled]="checking || submitting || !canSubmit"
+  [nzCancelDisabled]="submitting"
+  [nzClosable]="!submitting"
+  [nzMaskClosable]="!submitting"
+  [nzKeyboard]="!submitting"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="login()"
+>
+  <ng-container *nzModalContent>
+    <p class="break-all" *ngIf="!isSelfDevelop">
+      {{ $t('_authBranch') }}: {{ config.branch }}
+    </p>
+    <p *ngIf="checking" role="status">{{ $t('_authReading') }}</p>
+    <div *ngIf="configError" class="mb-4">
+      <p id="nav-auth-config-error" role="alert" class="text-red-600">
+        {{ configError }}
+      </p>
+      <button
+        nz-button
+        type="button"
+        (click)="loadConfig()"
+        [disabled]="checking || submitting"
+      >
+        {{ $t('_authRetry') }}
+      </button>
+    </div>
+    <nz-radio-group
+      *ngIf="authSource"
+      [ngModel]="mode"
+      (ngModelChange)="selectMode($event)"
+      [nzDisabled]="submitting || checking"
+      class="login-choice"
+      [attr.aria-label]="$t('_authAdminLogin')"
+    >
+      <label nz-radio-button nzValue="password">{{
+        $t('_authPasswordLogin')
+      }}</label>
+      <label nz-radio-button nzValue="token">{{ $t('_authTokenLogin') }}</label>
+    </nz-radio-group>
+    <ng-container *ngIf="mode === 'password'; else tokenForm">
+      <label for="nav-login-password">{{ $t('_authLoginPassword') }}</label>
+      <input
+        nz-input
+        id="nav-login-password"
+        type="password"
+        [(ngModel)]="password"
+        autocomplete="off"
+        [disabled]="submitting || checking"
+        (keydown)="onKey($event)"
+        #input
+      />
+      <p class="!mt-2">{{ $t('_authPasswordHint') }}</p>
+    </ng-container>
+    <ng-template #tokenForm>
+      <p>{{ isSelfDevelop ? $t('_password') : $t('_authTokenHint') }}</p>
+      <label class="sr-only" for="nav-login-token">{{
+        isSelfDevelop ? $t('_password') : 'Git Token'
+      }}</label>
+      <input
+        nz-input
+        id="nav-login-token"
+        type="password"
+        [(ngModel)]="token"
+        autocomplete="off"
+        [disabled]="submitting || checking"
+        (keydown)="onKey($event)"
+        #input
+        [placeholder]="isSelfDevelop ? 'Password' : 'Token'"
+      />
+      <div class="mt-4" *ngIf="showImgToken">
+        <label for="nav-login-image-token">{{ $t('_authImageToken') }}</label>
+        <input
+          nz-input
+          id="nav-login-image-token"
+          type="password"
+          [(ngModel)]="imageToken"
+          autocomplete="off"
+          [disabled]="submitting || checking"
+          (keydown)="onKey($event)"
+          placeholder="Image token"
+        />
+      </div>
+      <p *ngIf="!isSelfDevelop" class="!mt-2">
+        {{ $t('_getToken')
+        }}<a [href]="tokenHelpUrl" target="_blank" rel="noopener noreferrer">
+          {{ $t('_readDoc') }}</a
+        >
+      </p>
+    </ng-template>
+    <p
+      id="nav-login-error"
+      *ngIf="loginError"
+      role="alert"
+      class="text-red-600"
+    >
+      {{ loginError }}
+    </p>
+    <p class="!mt-4 text-xs text-gray-500">{{ $t('_authSessionHint') }}</p>
+  </ng-container>
+</nz-modal>

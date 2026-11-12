@@ -1,0 +1,135 @@
+<nz-layout
+  class="system-layout"
+  [class.sidebar-collapsed]="isCollapsed"
+  *ngIf="isLogin"
+>
+  <button
+    *ngIf="!isCollapsed"
+    type="button"
+    class="sidebar-mask"
+    [attr.aria-label]="$t('_adminCloseMenu')"
+    (click)="toggleCollapsed()"
+  ></button>
+  <nz-sider
+    [attr.inert]="isCollapsed ? '' : null"
+    class="sidebar"
+    nzWidth="232px"
+    nzTheme="dark"
+    nzCollapsible
+    [(nzCollapsed)]="isCollapsed"
+    [nzCollapsedWidth]="0"
+    [nzTrigger]="null"
+  >
+    <div class="sidebar-brand">
+      <span class="brand-mark"><nz-icon nzType="appstore" /></span>
+      <div>
+        <strong>{{ $t('_adminConsole') }}</strong
+        ><span>DISCOVERY NAV</span>
+      </div>
+    </div>
+    <nav class="sidebar-navigation" [attr.aria-label]="$t('_adminConsole')">
+      <ul nz-menu nzMode="inline" nzTheme="dark" class="sider-menu">
+        <ng-container *ngFor="let group of menuGroups">
+          <li nz-menu-group [nzTitle]="$t(group.title)">
+            <ng-container *ngFor="let item of menuItems">
+              <li
+                *ngIf="item.group === group.key && item.visible"
+                nz-menu-item
+                [attr.data-admin-route]="item.path"
+                [nzSelected]="currentMenu === item.path"
+              >
+                <a
+                  [routerLink]="['/system', item.path]"
+                  (click)="closeMobileMenu()"
+                  [attr.aria-current]="
+                    currentMenu === item.path ? 'page' : null
+                  "
+                  ><nz-icon [nzType]="item.icon" /><span>{{
+                    $t(item.title)
+                  }}</span></a
+                >
+              </li>
+            </ng-container>
+          </li>
+        </ng-container>
+      </ul>
+    </nav>
+    <div class="sidebar-footer">
+      <span>{{ $t('_curVer') }}</span
+      ><strong>v{{ version }}</strong>
+    </div>
+  </nz-sider>
+  <nz-layout class="inner-layout">
+    <nz-header class="admin-header">
+      <div class="header-location">
+        <button
+          nz-button
+          class="menu-toggle"
+          (click)="toggleCollapsed()"
+          [attr.aria-label]="$t('_adminToggleMenu')"
+          [attr.aria-expanded]="!isCollapsed"
+        >
+          <nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'" />
+        </button>
+        <div class="header-breadcrumb">
+          <span>{{ $t('_adminWorkspace') }}</span
+          ><span class="breadcrumb-divider">/</span
+          ><strong>{{ $t(currentPage.title) }}</strong>
+        </div>
+      </div>
+      <div class="header-actions">
+        <span
+          class="branch-badge"
+          *ngIf="!isSelfDevelop"
+          [title]="$t('_authBranch') + ': ' + branch"
+          ><span class="status-dot"></span>{{ branch }}</span
+        >
+        <button
+          nz-button
+          (click)="goBack()"
+          [attr.aria-label]="$t('_backHome')"
+        >
+          <nz-icon nzType="home" /><span class="header-action-label">{{
+            $t('_backHome')
+          }}</span>
+        </button>
+        <button
+          nz-button
+          nzDanger
+          (click)="logout()"
+          [attr.aria-label]="$t('_logout')"
+        >
+          <nz-icon nzType="logout" /><span class="header-action-label">{{
+            $t('_logout')
+          }}</span>
+        </button>
+      </div>
+    </nz-header>
+    <nz-content class="content">
+      <div class="admin-page-heading">
+        <h1>{{ $t(currentPage.title) }}</h1>
+        <p>{{ $t(currentPage.description) }}</p>
+      </div>
+      <div class="admin-page">
+        <nz-spin
+          nzSimple
+          nzSize="large"
+          class="fixed-center"
+          *ngIf="pageLoading"
+        ></nz-spin>
+        <router-outlet></router-outlet>
+      </div>
+    </nz-content>
+  </nz-layout>
+</nz-layout>
+
+<div class="admin-login-stage" *ngIf="!isLogin" aria-hidden="true">
+  <div class="login-brand">
+    <span class="brand-mark"><nz-icon nzType="appstore" /></span>
+    <div>
+      <strong>{{ $t('_adminConsole') }}</strong>
+      <p>{{ $t('_adminLoginIntro') }}</p>
+    </div>
+  </div>
+</div>
+<app-login [visible]="showLoginModal"></app-login>
