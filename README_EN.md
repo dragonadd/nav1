@@ -91,7 +91,7 @@ See [Authentication details](docs/authentication.md) for formats, cache behavior
 
 1. Fork the project or upload this source to your own Git repository. Commit the source and `pnpm-lock.yaml`; exclude `node_modules` and `dist`.
 2. Set `gitRepoUrl` to your repository and `branch` to the deployed source branch, usually `main`. Keep `address: ''` for static hosting. Configure your image repository and create its branch beforehand if needed.
-3. Set `hashMode: true` for GitHub Pages, or usually `false` for the other platforms. Commit the configuration before importing the repository.
+3. The GitHub Pages workflow enables Hash routing during its build. Other platforms keep YAML `hashMode`, usually `false`. For a local manual Pages build, set `hashMode: true`. Commit the configuration before importing the repository.
 
 ### Git-connected hosting
 
@@ -107,22 +107,18 @@ Use Node.js **22.12+ or 24+**. If an install command is requested, use `pnpm ins
 
 ### GitHub Pages
 
-This copy has no automatic deployment workflow. To publish manually:
+The included [deployment workflow](.github/workflows/deploy-gh-pages.yml) uses GitHub Actions, like project B:
 
-1. Clone your repository, confirm Git `origin` points to it, and commit `hashMode: true`.
-2. Run in the repository root:
+1. Commit the source and workflow to your own repository. Set YAML `gitRepoUrl` to that repository, `branch` to `main`, and keep `address` empty.
+2. In **Settings → Pages**, choose **GitHub Actions** under **Build and deployment → Source**. Switch existing branch-based Pages sites to this setting too.
+3. Open **Actions** and enable workflows if requested for a fork. Select **Deploy to GitHub Pages → Run workflow**, using `main` for the first deployment.
+4. Wait for both build and deploy to succeed, then visit `https://USER.github.io/REPO/`, or `https://USER.github.io/` for a repository named `USER.github.io`.
 
-   ```bash
-   pnpm install --frozen-lockfile
-   pnpm run build-gh-pages
-   pnpm dlx gh-pages -d dist/browser --nojekyll
-   ```
+Later pushes to `main`, including admin content and password commits, deploy automatically. No manual upload or `gh-pages` branch is required. Relative assets and build-time Hash routing support both root and project sites; append `#/system` to the site URL for admin.
 
-   The last command temporarily runs the publishing tool and pushes the output to `origin`'s `gh-pages` branch. Your local Git must have push access.
+A keeps explicit repository configuration rather than B's `auto` resolution. The build checks that the configured repository and branch match the workflow source. To deploy another branch, change both workflow `on.push.branches` and YAML `branch`. No extra deployment Token is needed; the workflow uses GitHub's built-in permissions.
 
-3. In **Settings → Pages**, select **Deploy from a branch**, branch `gh-pages` and `/ (root)`. Wait for publication, then visit `https://USER.github.io/REPO/`.
-
-After admin changes, run `git pull`, rebuild and publish again. For automatic updates, configure a [GitHub Actions Pages workflow](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
+Configure a custom domain under **Settings → Pages → Custom domain** and follow GitHub's DNS instructions. If deploying to Netlify, Vercel or Cloudflare Pages, remove this workflow to avoid duplicate builds.
 
 ### First use and troubleshooting
 

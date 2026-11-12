@@ -3,6 +3,9 @@
 # Compiled output
 /dist
 /tmp
+# Local agent work records
+/docs/superpowers/
+/.superpowers/
 /out-tsc
 /bazel-out
 

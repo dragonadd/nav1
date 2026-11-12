@@ -99,7 +99,7 @@ Token 仅写入当前标签页的 `sessionStorage`。刷新保留登录，退出
 
 1. Fork 项目或把当前源码上传到自己的 Git 仓库，提交源码和 `pnpm-lock.yaml`，不要上传 `node_modules`、`dist`。
 2. 修改 `nav.config.yaml`：`gitRepoUrl` 填自己的仓库，`branch` 填实际部署分支（通常是 `main`），静态部署保持 `address: ''`。使用自己的图床时，同时配置 `imageRepoUrl` 并提前创建图床分支。
-3. GitHub Pages 设置 `hashMode: true`，其他平台通常用 `false`。提交修改，再按下面的平台步骤部署。
+3. GitHub Pages 自动工作流会在构建时启用 Hash 路由，其他平台保留 YAML 的 `hashMode`（通常用 `false`）。本地手动构建 Pages 时设置 `hashMode: true`。提交修改，再按下面的平台步骤部署。
 
 ### 静态托管平台
 
@@ -115,22 +115,18 @@ Netlify、Vercel 和 Cloudflare Pages 都可以连接 Git 仓库，后续后台�
 
 ### GitHub Pages
 
-当前副本没有自动发布工作流，可以先手动发布：
+已内置 [自动发布工作流](.github/workflows/deploy-gh-pages.yml)，与 B 项目一样通过 GitHub Actions 部署：
 
-1. 把仓库克隆到本地，确认 Git 的 `origin` 指向自己的仓库，设置 `hashMode: true` 并提交。
-2. 在仓库根目录执行：
+1. 将源码和工作流提交到自己的仓库，确认 `nav.config.yaml` 的 `gitRepoUrl` 是这个仓库、`branch` 是 `main`、`address` 为空。
+2. 打开仓库 **Settings → Pages**，将 **Build and deployment → Source** 设为 **GitHub Actions**。之前使用分支发布的站点，也切换为这个选项。
+3. 打开 **Actions**，如果 Fork 的工作流未启用，先点击启用；选择 **Deploy to GitHub Pages → Run workflow**，在 `main` 分支触发首次部署。
+4. 等待工作流构建、部署均显示绿色对勾，访问 `https://用户名.github.io/仓库名/`；仓库名为 `用户名.github.io` 时，访问 `https://用户名.github.io/`。
 
-   ```bash
-   pnpm install --frozen-lockfile
-   pnpm run build-gh-pages
-   pnpm dlx gh-pages -d dist/browser --nojekyll
-   ```
+之后向 `main` 提交代码或在后台保存内容、密码，都会自动重新部署，无需手动上传产物或创建 `gh-pages` 分支。工作流使用相对资源路径并启用 Hash 路由，根站点和仓库子目录都能使用；后台地址为站点地址加 `#/system`。
 
-   最后一条命令临时运行发布工具，将产物推送到 `origin` 的 `gh-pages` 分支，需要本机 Git 有该仓库的推送权限。
+A 仍使用显式仓库配置，不会像 B 的 `auto` 配置一样替换仓库地址。工作流会检查仓库和提交分支是否匹配；修改 `gitRepoUrl` 或 `branch` 后请提交配置。若部署其他分支，同时修改工作流的 `on.push.branches` 和 YAML `branch`。普通数据 / 密码提交无需另配部署 Token，工作流使用 GitHub 自带权限。
 
-3. 打开仓库 **Settings → Pages**，Source 选择 **Deploy from a branch**，分支选择 `gh-pages`，目录选择 `/ (root)`。等待发布完成后访问 `https://用户名.github.io/仓库名/`。
-
-这种方式需要手动更新：后台保存后，先在本地 `git pull`，再重新构建并执行发布命令。需要每次保存后自动更新，可另行配置 [GitHub Actions 发布工作流](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)。
+自定义域名在 **Settings → Pages → Custom domain** 配置，并按 GitHub 提示设置 DNS。使用 Netlify、Vercel 或 Cloudflare Pages 时，可删除这个工作流，避免重复构建。
 
 ### 首次使用与常见问题
 

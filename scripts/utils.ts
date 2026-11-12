@@ -81,6 +81,30 @@ export const getConfig = () => {
     '',
   )
 
+  const isGitHubPages = process.env['NAV_GITHUB_PAGES'] === 'true'
+  if (isGitHubPages) {
+    const repository = process.env['GITHUB_REPOSITORY']
+    const branch = process.env['GITHUB_REF_NAME']
+    if (!repository || !branch)
+      throw new Error('缺少 GitHub Pages 的仓库或分支信息')
+    if (
+      gitRepoUrl.toLowerCase() !==
+      `https://github.com/${repository}`.toLowerCase()
+    )
+      throw new Error(
+        '请将 nav.config.yaml 的 gitRepoUrl 设置为当前 GitHub 仓库地址',
+      )
+    if (
+      process.env['GITHUB_REF_TYPE'] !== 'branch' ||
+      config['branch'] !== branch
+    )
+      throw new Error('请让 nav.config.yaml 的 branch 与当前部署分支一致')
+    if (config['address'])
+      throw new Error(
+        'GitHub Pages 是静态部署，请保持 nav.config.yaml 的 address 为空',
+      )
+  }
+
   const zorroVersion = pkgJson.dependencies['ng-zorro-antd'].replace(
     /[^0-9.]/g,
     '',
@@ -91,7 +115,7 @@ export const getConfig = () => {
     gitRepoUrl,
     imageRepoUrl: config['imageRepoUrl'],
     branch: config['branch'],
-    hashMode: config['hashMode'],
+    hashMode: isGitHubPages ? true : config['hashMode'],
     address: config['address'],
     email: config['email'],
     port: config['port'],

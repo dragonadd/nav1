@@ -81,7 +81,9 @@ const browser = await puppeteer.launch({
 try {
   const page = await browser.newPage()
   await page.setViewport({ width: 1440, height: 960, deviceScaleFactor: 1 })
-  const previews = path.resolve('tmp/admin-preview')
+  const previews =
+    process.env['NAV_TEST_OUTPUT_DIR'] ||
+    path.join(os.tmpdir(), 'nav-admin-preview')
   fs.mkdirSync(previews, { recursive: true })
   const errors: string[] = []
   page.on('pageerror', (error) => errors.push(String(error)))
