@@ -46,6 +46,7 @@ import event from 'src/utils/mitt'
     BreadcrumbComponent,
   ],
   selector: 'app-card',
+  host: { '[class.with-quick-edit]': 'showEdit && (isLogin || permissions.edit)' },
   templateUrl: './index.component.html',
   styleUrls: ['./index.component.scss'],
 })
@@ -53,6 +54,7 @@ export class CardComponent {
   @Input() dataSource!: IWebProps
   @Input() cardStyle!: ICardType
   @Input() iconSize = 60
+  @Input() showEdit = false
   @ViewChild('root', { static: false }) root!: ElementRef
 
   readonly $t = $t
@@ -126,6 +128,12 @@ export class CardComponent {
   onRateChange(rate: number): void {
     this.dataSource.rate = rate
     setNavs(navs())
+  }
+
+  editFromCard(event: Event): void {
+    event.preventDefault()
+    event.stopPropagation()
+    this.openEditWebMoal()
   }
 
   async confirmDel(): Promise<void> {

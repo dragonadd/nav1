@@ -1,0 +1,43 @@
+@if (enabled()) {
+  <section
+    class="daily-text"
+    [attr.aria-label]="title()"
+    [attr.aria-busy]="loading()"
+  >
+    @if (showTitle()) {
+      <h2>{{ title() }}</h2>
+    }
+    <div aria-live="polite">
+      @for (part of parts(); track $index) {
+        <figure>
+          <blockquote>{{ part.text }}</blockquote>
+          @if (part.attribution && (part.from || part.author)) {
+            <figcaption>
+              — {{ part.author }}{{ part.from ? '《' + part.from + '》' : '' }}
+            </figcaption>
+          }
+        </figure>
+      }
+      @if (!parts().length && loading()) {
+        <p>{{ $t('_dailyLoading') }}</p>
+      } @else if (!parts().length && !failures().length) {
+        <p>{{ $t('_dailyEmpty') }}</p>
+      }
+      @if (failures().length) {
+        <div class="daily-failure" [title]="failures().join('\n')">
+          <span>{{
+            parts().length ? $t('_dailyPartialFailure') : $t('_dailyFailure')
+          }}</span>
+          <button
+            type="button"
+            class="daily-retry"
+            (click)="retry()"
+            [disabled]="loading()"
+          >
+            {{ $t('_dailyRetry') }}
+          </button>
+        </div>
+      }
+    </div>
+  </section>
+}

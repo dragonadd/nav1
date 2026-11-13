@@ -128,12 +128,12 @@ export default class SystemComponent implements OnDestroy {
       visible: true,
     },
     {
-      path: 'auth',
-      title: '_vipAuth',
-      description: '_adminAuthDescription',
+      path: 'password',
+      title: '_authPasswordManagement',
+      description: '_adminPasswordDescription',
       icon: 'safety-certificate',
       group: 'settings',
-      visible: true,
+      visible: !isSelfDevelop,
     },
     {
       path: 'config',
@@ -205,11 +205,7 @@ export default class SystemComponent implements OnDestroy {
   }
 
   goBack() {
-    this.router.navigate(['/'], {
-      queryParams: {
-        _: Date.now(),
-      },
-    })
+    this.router.navigate(['/'])
   }
 
   closeMobileMenu() {

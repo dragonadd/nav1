@@ -1,89 +1,153 @@
-<main class="main">
-  <nz-spin
-    nzSimple
-    *ngIf="commonService.sliceMax === 0"
-    class="position-center !z-50 mt-24"
-  />
-  <app-sidebar />
+<div class="side-shell">
+  <header class="mobile-header">
+    <a routerLink="/side" class="brand"
+      ><nz-icon nzType="appstore" />{{ commonService.title() }}</a
+    >
+    <button
+      type="button"
+      class="menu-toggle"
+      #menuButton
+      (click)="menuOpen = !menuOpen"
+      aria-controls="side-sidebar"
+      [attr.aria-expanded]="menuOpen"
+      [attr.aria-label]="$t('_adminToggleMenu')"
+    >
+      <nz-icon [nzType]="menuOpen ? 'menu-fold' : 'menu-unfold'" />
+    </button>
+  </header>
 
-  <div class="inner-layout dark-bg">
-    <app-swiper
-      *ngIf="commonService.settings().sideThemeImages.length > 0"
-      [images]="commonService.settings().sideThemeImages"
-      [autoplay]="commonService.settings().sideThemeAutoplay"
-      [height]="commonService.settings().sideThemeHeight"
-    />
-    <app-search />
-    <component-group />
-    <div class="px-2.5">
-      <app-web-list [search]="false" [overflow]="true" [iconSize]="35" />
-    </div>
-
-    <div class="content" id="content">
+  <button
+    *ngIf="mobile && menuOpen"
+    type="button"
+    class="sidebar-backdrop"
+    [attr.aria-label]="$t('_adminCloseMenu')"
+    (click)="closeMenu()"
+  ></button>
+  <aside
+    id="side-sidebar"
+    class="side-sidebar"
+    [class.is-open]="menuOpen"
+    [attr.inert]="mobile && !menuOpen ? '' : null"
+  >
+    <a routerLink="/side" class="brand"
+      ><nz-icon nzType="appstore" />{{ commonService.title() }}</a
+    >
+    <nav [attr.aria-label]="$t('_sideNavigation')" class="category-nav">
       <div
-        class="sticky top-0 left-0 z-10"
-        *ngIf="commonService.currentList.length > 1"
+        *ngFor="
+          let group of commonService.navs();
+          let groupIndex = index;
+          trackBy: commonService.trackByItem
+        "
       >
-        <app-class-tabs [data]="commonService.currentList" />
+        <p class="group-heading">{{ group.title }}</p>
+        <button
+          *ngFor="
+            let category of group.nav;
+            let categoryIndex = index;
+            trackBy: commonService.trackByItem
+          "
+          class="category-link"
+          type="button"
+          (click)="selectCategory(category.id)"
+          [class.active]="
+            !commonService.searchKeyword &&
+            commonService.oneIndex === groupIndex &&
+            commonService.twoIndex === categoryIndex
+          "
+          [attr.aria-current]="
+            !commonService.searchKeyword &&
+            commonService.oneIndex === groupIndex &&
+            commonService.twoIndex === categoryIndex
+              ? 'page'
+              : null
+          "
+        >
+          <app-logo
+            *ngIf="category.icon; else categoryIcon"
+            [src]="category.icon"
+            [name]="category.title"
+            [size]="19"
+          />
+          <ng-template #categoryIcon><nz-icon nzType="appstore" /></ng-template>
+          <span>{{ category.title }}</span>
+        </button>
       </div>
-      <div class="box">
-        <div *ngIf="commonService.currentList.length > 0; else noData">
-          <div
-            *ngFor="
-              let item of commonService.currentList.slice(
-                0,
-                commonService.sliceMax
-              );
-              let i = index;
-              trackBy: commonService.trackByItem
-            "
-          >
-            <div class="nav-wrapper">
-              <app-toolbar-title
-                [dataSource]="item"
-                (onCollapse)="commonService.onCollapse(item)"
-              />
+    </nav>
+  </aside>
 
-              <div
-                [class.hidden]="item['collapsed']"
-                [ngClass]="{
-                  'grid gap-x-4 gap-y-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4':
-                    commonService.settings().sideCardStyle !== 'icon',
-                  'flex flex-wrap gap-x-6 gap-y-4':
-                    commonService.settings().sideCardStyle === 'icon',
-                  '2xl:grid-cols-6':
-                    commonService.settings().sideCardStyle === 'original' ||
-                    commonService.settings().sideCardStyle === 'example',
-                }"
-              >
-                <app-card
-                  *ngFor="
-                    let el of item.nav;
-                    trackBy: commonService.trackByItemWeb
-                  "
-                  [cardStyle]="commonService.settings().sideCardStyle"
-                  [dataSource]="el"
-                  class="column-border"
-                />
-              </div>
-            </div>
-          </div>
+  <main class="side-main">
+    <section class="side-hero" [style.background-image]="bannerImage">
+      <h1>
+        {{
+          commonService.settings().sideTitle || commonService.settings().title
+        }}
+      </h1>
+      <app-search
+        *ngIf="commonService.settings().openSearch"
+        [showLogo]="false"
+        [siteSearchFallback]="true"
+      />
+      <app-daily-text />
+    </section>
+
+    <div class="side-content">
+      <component-group *ngIf="commonService.settings().components.length" />
+      <div class="content-heading">
+        <div>
+          <span class="section-caption">{{
+            commonService.searchKeyword
+              ? $t('_sideResults')
+              : $t('_sideNavigation')
+          }}</span>
+          <h2>
+            {{
+              commonService.searchKeyword ||
+                commonService.navs()[commonService.oneIndex]?.nav?.[
+                  commonService.twoIndex
+                ]?.title
+            }}
+          </h2>
         </div>
-
-        <ng-template #noData>
-          <app-no-data />
-        </ng-template>
+        <span class="count-badge" aria-live="polite"
+          >{{ websiteCount }} {{ $t('_sideWebsites') }}</span
+        >
       </div>
+
+      <div *ngIf="commonService.currentList.length; else noData">
+        <section
+          class="nav-wrapper"
+          *ngFor="
+            let section of commonService.currentList;
+            trackBy: commonService.trackByItem
+          "
+        >
+          <app-toolbar-title
+            [dataSource]="section"
+            (onCollapse)="commonService.onCollapse(section)"
+          />
+          <p
+            *ngIf="!section.nav.length && !section.collapsed"
+            class="empty-section"
+          >
+            {{ $t('_sideEmptySection') }}
+          </p>
+          <div class="side-grid" [class.is-collapsed]="section.collapsed">
+            <app-card
+              *ngFor="
+                let website of section.nav;
+                trackBy: commonService.trackByItemWeb
+              "
+              cardStyle="side"
+              [dataSource]="website"
+              [showEdit]="true"
+            />
+          </div>
+        </section>
+      </div>
+      <ng-template #noData><app-no-data /></ng-template>
+      <app-footer [content]="commonService.settings().sideFooterHTML" />
     </div>
-
-    <app-footer
-      className="side-footer"
-      [content]="commonService.settings().sideFooterHTML"
-    />
-  </div>
-</main>
-
-<app-fixbar
-  (onCollapse)="commonService.onCollapseAll($event)"
-  [collapsed]="commonService.collapsed"
-/>
+  </main>
+  <app-fixbar [showCollapse]="false" />
+</div>

@@ -149,7 +149,7 @@ export class FixbarComponent {
   toggleTheme(theme: any) {
     this.router.navigate([theme.url], {
       queryParams: {
-        _: Date.now(),
+        _: null,
       },
       queryParamsHandling: 'merge',
     })

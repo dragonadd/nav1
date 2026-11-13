@@ -1,6 +1,7 @@
 // 开源项目，未经作者同意，不得以抄袭/复制代码/修改源代码版权信息。
 // Copyright @ 2018-present xiejiahe. All rights reserved.
 // See https://github.com/xjh22222228/nav
+import type { DailyTextSettings } from '../utils/daily-text'
 
 export type ThemeType = 'Light' | 'Sim' | 'Side' | 'App' | 'Shortcut' | 'Super'
 
@@ -99,7 +100,8 @@ export interface IHolidayProps {
 }
 
 export interface IComponentItemProps
-  extends Partial<Omit<INewsProps, 'bgColor'>>,
+  extends
+    Partial<Omit<INewsProps, 'bgColor'>>,
     Partial<ICalendarProps>,
     Partial<IOffWorkProps>,
     Partial<IImageProps>,
@@ -125,6 +127,7 @@ export type ICardType =
   | 'original'
   | 'poster'
   | 'icon'
+  | 'side'
 
 type OverType = 'overflow' | 'ellipsis'
 
@@ -225,7 +228,7 @@ export interface IClassProps {
   ownVisible?: boolean
 }
 
-export interface ISettings {
+export interface ISettings extends DailyTextSettings {
   favicon: string
   language: 'zh-CN' | 'en'
   loading: string
@@ -248,6 +251,9 @@ export interface ISettings {
   createWebKey: string
   logo: string
   darkLogo: string
+
+  sideDescription: string
+  sideBanner: string
 
   appCardStyle: ICardType
   appDocTitle: string

@@ -80,7 +80,6 @@ export class CommonService {
       relativeTo: this.activatedRoute,
       queryParams: {
         id,
-        _: Date.now(),
       },
     })
     event.emit('SEARCH_FOCUS')

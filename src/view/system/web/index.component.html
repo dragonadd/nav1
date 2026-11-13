@@ -1,4 +1,4 @@
-<div class="admin mt-2.5">
+<div class="admin web-manager mt-2.5">
   <div class="page-actions">
     <button
       *ngIf="!isSelfDevelop"
@@ -32,7 +32,10 @@
       />
     </button>
   </div>
-  <div class="tip2" [class.has-errors]="(settings.errorUrlCount || 0) > 0">
+  <p class="web-save-tip" *ngIf="!isSelfDevelop">
+    {{ $t('_adminWebSaveTip') }}
+  </p>
+  <div class="tip2 has-errors" *ngIf="(settings.errorUrlCount || 0) > 0">
     {{ $t('_errCountTip', { count: settings.errorUrlCount || 0 }) }}
   </div>
 
@@ -50,7 +53,7 @@
         nz-button
         nzDanger
         style="margin-left: 10px"
-        [disabled]="setOfCheckedId.size <= 0"
+        [disabled]="checkedIds.length <= 0"
       >
         {{ $t('_batchDel') }}
       </button>
@@ -69,7 +72,7 @@
               [nzChecked]="checkedAll"
               (nzCheckedChange)="onCheckAll($event)"
             >
-              ({{ setOfCheckedId.size }})
+              ({{ checkedIds.length }})
             </th>
             <th class="min-w-[200px]">{{ $t('_action') }}</th>
             <th class="min-w-[100px]">{{ $t('_icon') }}</th>
@@ -84,12 +87,24 @@
               (nzCheckedChange)="onItemChecked(data.id, $event)"
             ></td>
             <td class="select-none">
-              <a (click)="moveOneUp(idx)" [class.invisible]="idx === 0">{{
-                $t('_moveUp')
-              }}</a>
-              <a (click)="moveOneDown(idx)" class="ml-2.5">{{
-                $t('_moveDown')
-              }}</a>
+              <button
+                nz-button
+                nzType="link"
+                nzSize="small"
+                (click)="moveOneUp(idx)"
+                [disabled]="idx === 0"
+              >
+                {{ $t('_moveUp') }}
+              </button>
+              <button
+                nz-button
+                nzType="link"
+                nzSize="small"
+                (click)="moveOneDown(idx)"
+                [disabled]="idx === navs().length - 1"
+              >
+                {{ $t('_moveDown') }}
+              </button>
               <a (click)="openEditClass(data)" class="ml-2.5">{{
                 $t('_edit')
               }}</a>
@@ -140,7 +155,7 @@
         nz-button
         nzDanger
         class="!ml-2.5"
-        [disabled]="setOfCheckedId.size <= 0"
+        [disabled]="checkedIds.length <= 0"
       >
         {{ $t('_batchDel') }}
       </button>
@@ -159,7 +174,7 @@
               [nzChecked]="checkedAll"
               (nzCheckedChange)="onCheckAll($event)"
             >
-              ({{ setOfCheckedId.size }})
+              ({{ checkedIds.length }})
             </th>
             <th class="min-w-[200px]">{{ $t('_action') }}</th>
             <th class="min-w-[100px]">{{ $t('_icon') }}</th>
@@ -248,7 +263,7 @@
         nz-button
         nzDanger
         class="!ml-2.5"
-        [disabled]="setOfCheckedId.size <= 0"
+        [disabled]="checkedIds.length <= 0"
       >
         {{ $t('_batchDel') }}
       </button>
@@ -267,7 +282,7 @@
               [nzChecked]="checkedAll"
               (nzCheckedChange)="onCheckAll($event)"
             >
-              ({{ setOfCheckedId.size }})
+              ({{ checkedIds.length }})
             </th>
             <th class="min-w-[200px]">{{ $t('_action') }}</th>
             <th class="min-w-[100px]">{{ $t('_icon') }}</th>
@@ -312,159 +327,219 @@
       </nz-table>
     </nz-tab>
 
-    <nz-tab [nzTitle]="$t('_mgrWeb') + '(' + internal.loginViewCount + ')'">
-      <nz-select
-        [ngModel]="oneSelect"
-        nzShowSearch
-        [nzPlaceHolder]="$t('_sel1')"
-        (ngModelChange)="hanldeOneSelect($event)"
-        class="w-full !mb-2.5 md:w-[150px] md:!mb-0"
-      >
-        <nz-option
-          *ngFor="let item of navs()"
-          [nzLabel]="item.title"
-          [nzValue]="item.id"
+    <nz-tab [nzTitle]="$t('_mgrWeb') + ' (' + websiteTableData.length + ')'">
+      <div class="web-filters">
+        <label class="web-search" for="nav-web-search">
+          <span>{{ $t('_adminWebSearch') }}</span>
+          <input
+            id="nav-web-search"
+            nz-input
+            type="search"
+            [ngModel]="websiteKeyword"
+            (ngModelChange)="websiteKeyword = $event; onTabChange()"
+            [placeholder]="$t('_adminWebSearch')"
+          />
+        </label>
+        <label>
+          <span>{{ $t('_adminFirstCategory') }}</span>
+          <nz-select
+            id="nav-web-first"
+            [ngModel]="oneSelect"
+            nzShowSearch
+            (ngModelChange)="hanldeOneSelect($event)"
+          >
+            <nz-option [nzLabel]="$t('_adminAllCategories')" [nzValue]="-1" />
+            <nz-option
+              *ngFor="let item of navs()"
+              [nzLabel]="item.title"
+              [nzValue]="item.id"
+            />
+          </nz-select>
+        </label>
+        <label>
+          <span>{{ $t('_adminSecondCategory') }}</span>
+          <nz-select
+            id="nav-web-second"
+            [ngModel]="twoSelect"
+            nzShowSearch
+            [nzDisabled]="oneIndex < 0"
+            (ngModelChange)="hanldeTwoSelect($event)"
+          >
+            <nz-option [nzLabel]="$t('_adminAllCategories')" [nzValue]="-1" />
+            <nz-option
+              *ngFor="let item of twoTableData"
+              [nzLabel]="item.title"
+              [nzValue]="item.id"
+            />
+          </nz-select>
+        </label>
+        <label>
+          <span>{{ $t('_adminThirdCategory') }}</span>
+          <nz-select
+            id="nav-web-third"
+            [ngModel]="threeSelect"
+            nzShowSearch
+            [nzDisabled]="twoIndex < 0"
+            (ngModelChange)="hanldeThreeSelect($event)"
+          >
+            <nz-option [nzLabel]="$t('_adminAllCategories')" [nzValue]="-1" />
+            <nz-option
+              *ngFor="let item of threeTableData"
+              [nzLabel]="item.title"
+              [nzValue]="item.id"
+            />
+          </nz-select>
+        </label>
+      </div>
+      <div class="web-list-actions">
+        <button
+          nz-button
+          nzType="primary"
+          (click)="openCreateWebModal()"
+          [disabled]="threeIndex < 0"
         >
-        </nz-option>
-      </nz-select>
-
-      <nz-select
-        [ngModel]="twoSelect"
-        nzShowSearch
-        [nzPlaceHolder]="$t('_sel2')"
-        (ngModelChange)="hanldeTwoSelect($event)"
-        class="w-full !mb-2.5 md:w-[150px] md:!mb-0 md:!ml-2.5"
-      >
-        <nz-option
-          *ngFor="let item of twoTableData"
-          [nzLabel]="item.title"
-          [nzValue]="item.id"
+          {{ $t('_addWeb') }}
+        </button>
+        <button
+          class="web-errors-toggle"
+          nz-button
+          [nzType]="errorOnly ? 'primary' : 'default'"
+          [attr.aria-pressed]="errorOnly"
+          (click)="toggleErrorFilter()"
         >
-        </nz-option>
-      </nz-select>
-
-      <nz-select
-        [ngModel]="threeSelect"
-        nzShowSearch
-        [nzPlaceHolder]="$t('_sel3')"
-        (ngModelChange)="hanldeThreeSelect($event)"
-        class="w-full !mb-2.5 md:w-[150px] md:!mb-0 md:!ml-2.5"
-      >
-        <nz-option
-          *ngFor="let item of threeTableData"
-          [nzLabel]="item.title"
-          [nzValue]="item.id"
+          {{ $t('_adminOnlyErrors') }}
+        </button>
+        <button
+          class="web-batch-delete"
+          nz-button
+          nzDanger
+          (click)="onBatchDelete()"
+          [disabled]="checkedIds.length <= 0"
         >
-        </nz-option>
-      </nz-select>
-
-      <button
-        nz-button
-        nzType="primary"
-        (click)="openCreateWebModal()"
-        class="md:!ml-2.5"
-      >
-        {{ $t('_addWeb') }}({{ websiteTableData.length }})
-      </button>
-      <button
-        (click)="onBatchDelete()"
-        nz-button
-        nzDanger
-        [disabled]="setOfCheckedId.size <= 0"
-        class="!ml-2.5"
-      >
-        {{ $t('_batchDel') }}
-      </button>
-      <button
-        class="!ml-2.5"
-        nz-button
-        nzType="primary"
-        nzDanger
-        (click)="getErrorWebs()"
-      >
-        {{ $t('_getErrorWeb') }}
-      </button>
-
+          {{ $t('_batchDel') }}
+        </button>
+        <p class="web-result-count" aria-live="polite">
+          {{
+            $t('_adminWebResults', {
+              count: websiteTableData.length,
+              selected: checkedIds.length,
+            })
+          }}
+        </p>
+      </div>
+      <p class="web-category-tip" *ngIf="threeIndex < 0">
+        {{ $t('_adminChooseCategory') }}
+      </p>
       <nz-table
-        #rowSelectionTable
-        #basicTable
+        class="web-table"
         [nzData]="websiteTableData"
         [nzShowPagination]="false"
-        style="margin-top: 15px"
+        [nzScroll]="{ x: '960px' }"
+        nzSize="small"
       >
         <thead>
           <tr>
             <th
-              class="min-w-[70px]"
+              nzWidth="48px"
               [nzChecked]="checkedAll"
+              [nzIndeterminate]="checkedIds.length > 0 && !checkedAll"
               (nzCheckedChange)="onCheckAll($event)"
-            >
-              ({{ setOfCheckedId.size }})
+            ></th>
+            <th nzWidth="280px">{{ $t('_webName') }}</th>
+            <th nzWidth="250px">{{ $t('_webDesc') }}</th>
+            <th nzWidth="200px">
+              {{ $t('_webTag') }} / {{ $t('_associatedLabels') }}
             </th>
-            <th class="text-center min-w-[60px]">{{ $t('_action') }}</th>
-            <th class="min-w-[70px]">{{ $t('_status') }}</th>
-            <th class="min-w-[80px]">{{ $t('_icon') }}</th>
-            <th class="min-w-[100px]">{{ $t('_webName') }}</th>
-            <th class="min-w-[100px]">{{ $t('_associatedLabels') }}</th>
-            <th class="min-w-[120px]">{{ $t('_onlyOwnVisible') }}</th>
-            <th class="min-w-[300px]">{{ $t('_webDesc') }}</th>
-            <th class="min-w-[300px]">{{ $t('_webTag') }}</th>
+            <th nzWidth="182px">{{ $t('_action') }}</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let data of websiteTableData; let idx = index">
+          <tr
+            *ngFor="
+              let data of websiteTableData;
+              let idx = index;
+              trackBy: commonService.trackByItemWeb
+            "
+          >
             <td
               [nzChecked]="setOfCheckedId.has(data.id)"
               (nzCheckedChange)="onItemChecked(data.id, $event)"
             ></td>
-            <td class="text-center select-none">
-              <div *ngIf="errorWebs.length <= 0">
-                <a (click)="moveWebUp(idx)" [class.invisible]="idx === 0">{{
-                  $t('_moveUp')
-                }}</a>
+            <td>
+              <div class="web-identity">
+                <app-logo [src]="data.icon" [name]="data.name" [size]="32" />
+                <div>
+                  <a
+                    class="web-name"
+                    [href]="data.url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >{{ data.name }}</a
+                  >
+                  <span class="web-address" [title]="data.url">{{
+                    data.url
+                  }}</span>
+                  <span class="web-status" *ngIf="data.ok === false">{{
+                    $t('_adminSuspectedError')
+                  }}</span>
+                  <span class="web-private" *ngIf="data.ownVisible">{{
+                    $t('_onlyOwnVisible')
+                  }}</span>
+                </div>
               </div>
-              <div *ngIf="errorWebs.length <= 0">
-                <a (click)="moveWebDown(idx)">{{ $t('_moveDown') }}</a>
+            </td>
+            <td>
+              <p class="web-description" [title]="data.desc">{{ data.desc }}</p>
+            </td>
+            <td>
+              <p class="web-category" [title]="data.breadcrumb?.join(' / ')">
+                {{ data.breadcrumb?.join(' / ') }}
+              </p>
+              <tag-list [data]="data.tags" *ngIf="data.tags?.length" />
+            </td>
+            <td>
+              <div class="web-row-actions">
+                <button
+                  class="web-edit"
+                  nz-button
+                  nzType="link"
+                  nzSize="small"
+                  (click)="openEditWebModal(data)"
+                >
+                  {{ $t('_edit') }}
+                </button>
+                <button
+                  nz-button
+                  nzType="link"
+                  nzSize="small"
+                  (click)="openMoveWebModal(data)"
+                >
+                  {{ $t('_move') }}
+                </button>
               </div>
-              <a (click)="openEditWebModal(data)">{{ $t('_edit') }}</a>
-              <div *ngIf="errorWebs.length <= 0">
-                <a (click)="openMoveWebModal(data)">{{ $t('_move') }}</a>
+              <div class="web-sort-actions" *ngIf="canSortWebsites">
+                <button
+                  class="web-sort-up"
+                  nz-button
+                  nzType="link"
+                  nzSize="small"
+                  [disabled]="idx === 0"
+                  (click)="moveWebUp(idx)"
+                >
+                  {{ $t('_moveUp') }}
+                </button>
+                <button
+                  class="web-sort-down"
+                  nz-button
+                  nzType="link"
+                  nzSize="small"
+                  [disabled]="idx === websiteTableData.length - 1"
+                  (click)="moveWebDown(idx)"
+                >
+                  {{ $t('_moveDown') }}
+                </button>
               </div>
             </td>
-            <td>
-              <span
-                *ngIf="data.ok === false"
-                nz-icon
-                nzType="close"
-                nzTheme="outline"
-                style="color: red"
-              ></span>
-            </td>
-            <td>
-              <app-logo
-                *ngIf="data.icon"
-                [src]="data.icon"
-                [name]="data.name"
-              />
-            </td>
-            <td>
-              <a [href]="data.url" target="_blank">{{ data.name }}</a>
-            </td>
-            <td>
-              <tag-list [data]="data.tags" *ngIf="data.tags" />
-            </td>
-            <td>
-              <i
-                *ngIf="data.ownVisible"
-                nz-icon
-                nzType="check"
-                nzTheme="outline"
-              ></i>
-            </td>
-            <td>
-              <pre class="desc">{{ data.desc }}</pre>
-            </td>
-            <td>{{ data.breadcrumb }}</td>
           </tr>
         </tbody>
       </nz-table>

@@ -41,6 +41,7 @@ export class SearchComponent {
   @ViewChild('input', { static: false }) input!: ElementRef
   @Input() size: 'small' | 'default' | 'large' = 'large'
   @Input() showLogo = true
+  @Input() siteSearchFallback = false
 
   readonly $t = $t
   readonly isLogin = isLogin
@@ -83,6 +84,19 @@ export class SearchComponent {
     }, 100)
   }
 
+  ngOnInit() {
+    if (this.siteSearchFallback && this.searchEngineList.length === 0) {
+      this.currentEngine = {
+        name: $t('_sideSearch'),
+        icon: '',
+        blocked: false,
+        isInner: true,
+        placeholder: $t('_sideSearchPlaceholder'),
+      }
+      this.searchEngineList.push(this.currentEngine)
+    }
+  }
+
   ngAfterViewInit() {
     if (!this.isMobile) {
       this.inputFocus()
@@ -118,7 +132,7 @@ export class SearchComponent {
         ...params,
         q: this.keyword,
         type: this.searchTypeValue,
-        _: Date.now(),
+        _: null,
       },
     })
 

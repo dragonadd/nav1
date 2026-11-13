@@ -4,6 +4,55 @@
 import { isSelfDevelop } from 'src/utils/utils'
 
 const english: Record<string, any> = {
+  _settingsDaily: 'Daily text',
+  _dailyTitle: 'Daily quote',
+  _dailySettingsDescription:
+    'Show daily text below the Side banner. Sources are cached by day; custom text also works on its own.',
+  _dailyEnable: 'Enable daily text',
+  _dailyShowTitle: 'Show card title',
+  _dailyCardTitle: 'Card title',
+  _dailyShowFrom: 'Show author and attribution',
+  _dailyLimit: 'Maximum characters per source',
+  _dailySources: 'Sources (one per line, up to 5)',
+  _dailySourcesHelp:
+    'Use a preset name or a URL, such as “My quote | https://example.com/quote | data.content”. JSON, arrays and plain text are supported. Append “| nofrom” to hide attribution. APIs must support CORS; use HTTPS APIs on HTTPS sites.',
+  _dailyCustom: 'Custom text',
+  _dailyTemplateHelp:
+    'Optional. Leave sources empty to use only custom text. Supports {date} {time} {weekday} {month} {day} and newlines using the visitor’s local time. Hiding the title keeps the text; disabling the card stops requests.',
+  _dailyCustomPlaceholder: 'Today is {date}, {weekday}. Keep exploring.',
+  _dailyRequired: 'Provide a text source or custom text.',
+  _dailyLoading: 'Finding today’s words…',
+  _dailyEmpty: 'No daily text has been configured.',
+  _dailyPartialFailure:
+    'Some sources are unavailable. Available text is shown.',
+  _dailyFailure: 'Daily text is temporarily unavailable.',
+  _dailyRetry: 'Retry',
+  _categoryIconHelp:
+    'Use an image URL or Font Awesome classes, such as fas fa-film, fab fa-github or fa-solid fa-book.',
+  _categoryIconPlaceholder: 'https://… or fas fa-film',
+  _settingsBasic: 'Site information',
+  _settingsBasicDescription:
+    'Set the site identity, search description and contact information.',
+  _settingsDisplay: 'Display and interaction',
+  _settingsDisplayDescription: 'Adjust search, shortcuts and visible tools.',
+  _settingsThemes: 'Theme settings',
+  _settingsThemesDescription:
+    'Choose the default theme and customize banners, cards and footers.',
+  _settingsAdvanced: 'Advanced settings',
+  _settingsAccess: 'Access and publishing',
+  _settingsAccessDescription:
+    'Set visitor permissions, the add shortcut and the request sent after saving.',
+  _settingsHtml: 'Custom header and footer',
+  _settingsHtmlDescription: 'Configure site-wide HTML using trusted content.',
+  _settingsPwa: 'Mobile application',
+  _settingsPwaDescription:
+    'Set the name and icon for the mobile installation entry.',
+  _settingsLoadingDescription:
+    'Choose an animation or provide custom loading content.',
+  _settingsSpiderDescription:
+    'Update website icons, descriptions and link status when needed.',
+  _settingsSaveHint:
+    'Save settings from every tab and wait for the current branch to deploy.',
   _adminConsole: 'Navigation Admin',
   _adminWorkspace: 'Workspace',
   _adminContentGroup: 'Content',
@@ -12,6 +61,18 @@ const english: Record<string, any> = {
   _adminToggleMenu: 'Expand or collapse navigation',
   _adminCloseMenu: 'Close navigation',
   _adminWebDescription: 'Keep categories and everyday links neatly organized.',
+  _adminWebSearch: 'Search website names, URLs or descriptions',
+  _adminAllCategories: 'All categories',
+  _adminFirstCategory: 'First-level category',
+  _adminSecondCategory: 'Second-level category',
+  _adminThirdCategory: 'Third-level category',
+  _adminChooseCategory:
+    'Select a third-level category to add a website. Use the tabs above to manage categories.',
+  _adminWebResults: 'Showing {count} websites · {selected} selected',
+  _adminWebSaveTip:
+    'Save your changes and wait for the current branch to deploy to publish them.',
+  _adminOnlyErrors: 'Unavailable only',
+  _adminSuspectedError: 'Possibly unavailable',
   _adminTagDescription: 'Manage tag names, colors and visibility.',
   _adminSearchDescription: 'Configure search entry points and engines.',
   _adminComponentDescription: 'Adjust widget content, layout and visibility.',
@@ -19,13 +80,23 @@ const english: Record<string, any> = {
   _adminExportDescription: 'Export your links back to the browser.',
   _adminCollectDescription: 'Review links submitted by visitors.',
   _adminSettingsDescription:
-    'Manage site appearance, content and login passwords.',
-  _adminAuthDescription: 'View authorization and available features.',
+    'Manage site appearance, content and theme settings.',
+  _adminPasswordDescription: 'Set, change or remove the admin login password.',
+  _sideThemeDescription:
+    'Side theme: category sidebar, banner search and grid cards using your existing navigation data.',
+  _sideBannerHint:
+    'Use an image URL, or leave blank for a gradient. Empty title, description and footer fields use global settings.',
+  _sideNavigation: 'Categories',
+  _sideResults: 'Search results',
+  _sideWebsites: 'websites',
+  _sideSearch: 'Site search',
+  _sideSearchPlaceholder: 'Search your saved websites…',
+  _sideEmptySection: 'No websites in this category yet.',
   _adminConfigDescription: 'Manage your self-hosted service configuration.',
   _adminInfoDescription: 'View repository, build and version details.',
   _adminRepoDetails: 'Repository & deployment',
   _adminVersionDetails: 'Version details',
-  _adminViewReleases: 'View release updates',
+  _adminViewReleases: 'View current branch',
   _adminSecurity: 'Access & security',
   _adminConfigured: 'Configured',
   _adminNotConfigured: 'Not configured',
@@ -41,7 +112,7 @@ const english: Record<string, any> = {
   _authTokenHint:
     'Enter a Git Token with write access to the main and image repositories.',
   _authPasswordHint:
-    'If you forget the password, use Token login and reset it in site settings.',
+    'If you forget the password, use Token login and reset it in Login password management.',
   _authSessionHint:
     'Credentials stay in this tab, survive refresh and are cleared on logout. Avoid public computers; browser session restoration may retain them.',
   _authLoginSuccess: 'Login successful',
@@ -197,7 +268,6 @@ const english: Record<string, any> = {
   _userCollect: 'Collect',
   _bookmarkImport: 'Book Import',
   _bookmarkExport: 'Book Export',
-  _vipAuth: 'Bind domain',
   _tagSettings: 'Tag',
   _websiteMang: 'Website',
   _addRow: 'Add',
@@ -261,12 +331,10 @@ const english: Record<string, any> = {
   _sidebarImg: 'Sidebar image',
   _sidebarTitle: 'Sidebar title',
   _defTitle4: 'Default website title, recommended to be within 4 words',
-  _inputAuthCode: 'Please enter the authorization code',
   _waitHandle: 'Submitted successfully, waiting for webmaster review',
   _collect: 'Get',
   _confirmCollect: 'Are you sure?',
   _pendingGet: 'Getting...',
-  _logoutAuthCode: 'Exit',
   _spiderRule: 'Spider rule',
   _spiderIcon: 'Spider icon',
   _spiderDesc: 'Spider description',
@@ -294,7 +362,6 @@ const english: Record<string, any> = {
   _docTitle: 'Document title',
   _importEnter: `Enter in browser <a href="chrome://bookmarks/" target="_blank">chrome://bookmarks/</a> Find the export bookmark, export the HTML file, click import below`,
   _buildSuccess: 'Build succeed',
-  _bindDomain: `Bind domain names, multiple separated by commas, without including protocols such as "example.com,xjh22222228.github.io"`,
   _clickExport: 'Click on me to export',
   _exportIcons: 'Simultaneously exporting website icons takes a long time',
   _errorIcons: 'The following icons cannot be processed properly:',

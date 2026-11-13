@@ -8,6 +8,7 @@ import { routes } from './app.routes'
 import {
   CheckOutline,
   CopyOutline,
+  EditOutline,
   ShareAltOutline,
   EllipsisOutline,
   LoadingOutline,
@@ -46,6 +47,7 @@ registerLocaleData(zh)
 const icons: IconDefinition[] = [
   CheckOutline,
   CopyOutline,
+  EditOutline,
   ShareAltOutline,
   EllipsisOutline,
   LoadingOutline,

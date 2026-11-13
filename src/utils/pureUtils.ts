@@ -4,6 +4,15 @@
 import type { ISettings, IWebProps, INavProps } from '../types'
 import { CODE_SYMBOL } from 'src/constants/symbol'
 
+export function getFontAwesomeClass(icon: string): string {
+  const value = icon?.trim() || ''
+  return /^(?:fa|fas|far|fab|fa-solid|fa-regular|fa-brands)(?:\s+fa-[a-z0-9-]+)+$/.test(
+    value,
+  )
+    ? value.replace(/\s+/g, ' ')
+    : ''
+}
+
 export function replaceJsdelivrCDN(
   url: string = '',
   settings: ISettings,

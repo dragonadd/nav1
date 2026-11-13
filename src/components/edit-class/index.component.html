@@ -26,10 +26,14 @@
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-label [nzSpan]="6">{{ $t('_iconAddr') }}</nz-form-label>
-        <nz-form-control [nzSpan]="18">
+        <nz-form-label [nzSpan]="6">{{ $t('_icon') }}</nz-form-label>
+        <nz-form-control [nzSpan]="18" [nzExtra]="$t('_categoryIconHelp')">
           <nz-input-group [nzPrefix]="prefixIcon" [nzSuffix]="suffixIconSearch">
-            <input formControlName="icon" nz-input />
+            <input
+              formControlName="icon"
+              nz-input
+              [placeholder]="$t('_categoryIconPlaceholder')"
+            />
           </nz-input-group>
 
           <ng-template #prefixIcon>

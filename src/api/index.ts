@@ -389,14 +389,6 @@ export function getIconBase64(data: any) {
   return httpNav.post('/api/base64', data, { timeout: 20000 })
 }
 
-export function getUserInfo(data?: Record<string, any>) {
-  return httpNav.post('/api/info/get', data)
-}
-
-export function updateUserInfo(data?: Record<string, any>) {
-  return httpNav.post('/api/info/update', data)
-}
-
 export function getTranslate(data?: Record<string, any>) {
   if (isSelfDevelop) {
     return http.post('/api/translate', getDefaultRequestData(data))

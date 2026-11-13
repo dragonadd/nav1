@@ -1,47 +1,79 @@
-// 开源项目，未经作者同意，不得以抄袭/复制代码/修改源代码版权信息。
-// Copyright @ 2018-present xiejiahe. All rights reserved.
-// See https://github.com/xjh22222228/nav
-
-import { Component } from '@angular/core'
+import { Component, ElementRef, HostListener, ViewChild } from '@angular/core'
 import { CommonModule } from '@angular/common'
-import { $t } from 'src/locale'
+import { RouterLink } from '@angular/router'
+import { NzIconModule } from 'ng-zorro-antd/icon'
 import { CommonService } from 'src/services/common'
-import { ComponentGroupComponent } from 'src/components/component-group/index.component'
-import { SearchComponent } from 'src/components/search/index.component'
-import { NzSpinModule } from 'ng-zorro-antd/spin'
 import { CardComponent } from 'src/components/card/index.component'
-import { NoDataComponent } from 'src/components/no-data/no-data.component'
+import { SearchComponent } from 'src/components/search/index.component'
 import { FooterComponent } from 'src/components/footer/footer.component'
 import { FixbarComponent } from 'src/components/fixbar/index.component'
-import { SwiperComponent } from 'src/components/swiper/index.component'
+import { NoDataComponent } from 'src/components/no-data/no-data.component'
 import { ToolbarTitleWebComponent } from 'src/components/toolbar-title/index.component'
-import { WebListComponent } from 'src/components/web-list/index.component'
-import { ClassTabsComponent } from 'src/components/class-tabs/index.component'
-import { SidebarComponent } from 'src/components/sidebar/index.component'
+import { ComponentGroupComponent } from 'src/components/component-group/index.component'
+import { LogoComponent } from 'src/components/logo/logo.component'
+import { DailyTextComponent } from 'src/components/daily-text/index.component'
+import { $t } from 'src/locale'
 
 @Component({
   standalone: true,
+  selector: 'app-side',
   imports: [
     CommonModule,
-    WebListComponent,
-    ToolbarTitleWebComponent,
-    ComponentGroupComponent,
-    SearchComponent,
-    NzSpinModule,
+    RouterLink,
+    NzIconModule,
     CardComponent,
-    NoDataComponent,
+    SearchComponent,
     FooterComponent,
     FixbarComponent,
-    SwiperComponent,
-    ClassTabsComponent,
-    SidebarComponent,
+    NoDataComponent,
+    ToolbarTitleWebComponent,
+    ComponentGroupComponent,
+    LogoComponent,
+    DailyTextComponent,
   ],
-  selector: 'app-side',
   templateUrl: './index.component.html',
   styleUrls: ['./index.component.scss'],
 })
 export default class SideComponent {
+  @ViewChild('menuButton') menuButton?: ElementRef<HTMLButtonElement>
   readonly $t = $t
+  private readonly breakpoint = window.matchMedia('(max-width: 768px)')
+  mobile = this.breakpoint.matches
+  menuOpen = false
+  private readonly onBreakpoint = () => {
+    this.mobile = this.breakpoint.matches
+    this.menuOpen = false
+  }
 
-  constructor(public commonService: CommonService) {}
+  constructor(public commonService: CommonService) {
+    this.breakpoint.addEventListener('change', this.onBreakpoint)
+  }
+
+  get websiteCount() {
+    return this.commonService.currentList.reduce(
+      (total, section) => total + section.nav.length,
+      0,
+    )
+  }
+
+  get bannerImage() {
+    const image = this.commonService.settings().sideBanner
+    return image ? `url(${JSON.stringify(image)})` : null
+  }
+
+  selectCategory(id: number) {
+    this.commonService.handleClickClass(id)
+    this.menuOpen = false
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }
+
+  @HostListener('document:keydown.escape')
+  closeMenu() {
+    if (this.menuOpen) this.menuButton?.nativeElement.focus()
+    this.menuOpen = false
+  }
+
+  ngOnDestroy() {
+    this.breakpoint.removeEventListener('change', this.onBreakpoint)
+  }
 }

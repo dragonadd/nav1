@@ -4,6 +4,7 @@
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { randomColor, getTextContent } from 'src/utils'
+import { getFontAwesomeClass } from 'src/utils/pureUtils'
 
 @Component({
   standalone: true,
@@ -25,11 +26,14 @@ export class LogoComponent {
 
   constructor() {}
 
-  ngOnInit() {
-    if (!this.src) {
-      this.generateColor()
-      this.getFirstLetter()
-    }
+  get fontClass() {
+    return getFontAwesomeClass(this.src)
+  }
+
+  ngOnChanges() {
+    this.isError = false
+    this.getFirstLetter()
+    if (!this.src) this.generateColor()
   }
 
   private generateColor() {
@@ -37,8 +41,9 @@ export class LogoComponent {
   }
 
   private getFirstLetter() {
+    this.firstLetter = ''
     if (this.name) {
-      this.firstLetter = getTextContent(this.name)[0].toUpperCase()
+      this.firstLetter = getTextContent(this.name)[0]?.toUpperCase() || ''
     }
   }
 

@@ -1,38 +1,14 @@
-<div
-  *ngIf="!src; else img"
-  class="circle common-icon"
-  [ngStyle]="{
-    width: size === 0 ? '' : size + 'px',
-    height: size === 0 ? '' : size + 'px',
-    minWidth: size + 'px',
-    minHeight: size + 'px',
-    borderRadius: radius + 'px',
-    background: backgroundColor
-  }"
->
-  {{ firstLetter }}
-</div>
-
-<ng-template #img>
-  <img
-    *ngIf="!isError"
-    [src]="src"
-    class="icon common-icon"
-    [ngStyle]="{
-      width: size === 0 ? '' : size + 'px',
-      height: size === 0 ? '' : size + 'px',
-      minWidth: size + 'px',
-      minHeight: size + 'px',
-      borderRadius: radius + 'px'
-    }"
-    draggable="false"
-    loading="lazy"
-    [alt]="firstLetter"
-    (error)="onError()"
-  />
-
+<i
+  *ngIf="fontClass; else imageOrText"
+  [class]="'font-icon common-icon ' + fontClass"
+  [style.font-size.px]="size || null"
+  [style.width.px]="size || null"
+  [style.height.px]="size || null"
+  aria-hidden="true"
+></i>
+<ng-template #imageOrText>
   <div
-    *ngIf="isError"
+    *ngIf="!src; else img"
     class="circle common-icon"
     [ngStyle]="{
       width: size === 0 ? '' : size + 'px',
@@ -40,9 +16,43 @@
       minWidth: size + 'px',
       minHeight: size + 'px',
       borderRadius: radius + 'px',
-      background: backgroundColor
+      background: backgroundColor,
     }"
   >
     {{ firstLetter }}
   </div>
+
+  <ng-template #img>
+    <img
+      *ngIf="!isError"
+      [src]="src"
+      class="icon common-icon"
+      [ngStyle]="{
+        width: size === 0 ? '' : size + 'px',
+        height: size === 0 ? '' : size + 'px',
+        minWidth: size + 'px',
+        minHeight: size + 'px',
+        borderRadius: radius + 'px',
+      }"
+      draggable="false"
+      loading="lazy"
+      [alt]="firstLetter"
+      (error)="onError()"
+    />
+
+    <div
+      *ngIf="isError"
+      class="circle common-icon"
+      [ngStyle]="{
+        width: size === 0 ? '' : size + 'px',
+        height: size === 0 ? '' : size + 'px',
+        minWidth: size + 'px',
+        minHeight: size + 'px',
+        borderRadius: radius + 'px',
+        background: backgroundColor,
+      }"
+    >
+      {{ firstLetter }}
+    </div>
+  </ng-template>
 </ng-template>

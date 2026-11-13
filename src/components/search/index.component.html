@@ -23,6 +23,7 @@
         type="text"
         nz-input
         [placeholder]="currentEngine.placeholder || ''"
+        [attr.aria-label]="currentEngine.placeholder || $t('_sideSearch')"
         [(ngModel)]="keyword"
         autofocus
         id="search-engine-input"

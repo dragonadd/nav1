@@ -8,6 +8,7 @@ import { $t } from 'src/locale'
 import { getToken } from 'src/utils/user'
 import { VERSION } from 'src/constants'
 import { isSelfDevelop } from 'src/utils/utils'
+import { getRepositories } from 'src/utils/admin-auth'
 import config from '../../../../nav.config.json'
 
 @Component({
@@ -24,6 +25,8 @@ export default class SystemInfoComponent {
   readonly config = config
   readonly date = config.datetime
   readonly version = VERSION
+  readonly repository = getRepositories(config).main
+  readonly versionUrl = `https://${this.repository.host}/${this.repository.owner}/${this.repository.repo}/${this.repository.provider === 'gitlab' ? '-/tree' : 'tree'}/${encodeURIComponent(this.repository.branch)}`
 
   constructor() {}
 }

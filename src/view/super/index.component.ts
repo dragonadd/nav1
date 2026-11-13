@@ -18,6 +18,7 @@ import { SearchComponent } from 'src/components/search/index.component'
 import { NzSpinModule } from 'ng-zorro-antd/spin'
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip'
 import { CardComponent } from 'src/components/card/index.component'
+import { LogoComponent } from 'src/components/logo/logo.component'
 import { NoDataComponent } from 'src/components/no-data/no-data.component'
 import { FooterComponent } from 'src/components/footer/footer.component'
 import { FixbarComponent } from 'src/components/fixbar/index.component'
@@ -37,6 +38,7 @@ import event from 'src/utils/mitt'
     NzSpinModule,
     NzToolTipModule,
     CardComponent,
+    LogoComponent,
     NoDataComponent,
     FooterComponent,
     FixbarComponent,

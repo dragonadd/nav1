@@ -1,183 +1,145 @@
 # 发现导航
 
-一个可纯静态部署、支持在线编辑的导航网站。当前代码基于 Angular 21、TypeScript 5.9、ng-zorro-antd 和 Tailwind CSS，导航数据保存在 Git 仓库，后台通过 Git API 保存修改。
+把常用网站整理成自己的导航页。发现导航支持分类收藏、站内搜索、多种主题和在线编辑，适合个人工具箱、学习资源库或团队链接页。
 
-[English](README_EN.md) · [原项目](https://github.com/xjh22222228/nav) · [官方预览](https://nav3.cn) · [后台登录机制详解](docs/authentication.md)
+网站可部署为静态文件，内容保存在 Git 仓库；登录后台后，就能维护网站和外观设置。
+
+[English](README_EN.md) · [项目仓库](https://github.com/dragonadd/nav1) · [使用说明](docs/usage.md) · [部署](#部署)
+
+![发现导航 Side 首页](docs/images/home-light.webp)
 
 ## 功能
 
-- 三级分类、网站和标签管理，支持移动、引用、批量操作及浏览器书签导入 / 导出。
-- Light、Super、Sim、Side、Shortcut、App 主题，响应式布局、暗黑模式和多种卡片样式。
-- 自定义搜索引擎、站内搜索、快捷操作及浏览位置记忆。
-- 日历、下班倒计时、节假日、图片、轮播、新闻、HTML 等可配置组件。
-- 站点标题、SEO、Logo、页头 / 页脚 HTML、图床和移动端 PWA 配置；当前页面模板也接入了不蒜子统计脚本。
-- GitHub、Gitee、GitLab 在线管理，以及密码 / Token 二选一后台登录。
-- 分组侧栏、页面说明及统一表格 / 表单样式；手机侧栏默认收起，保存条随布局适配。
-- 密码管理支持设置、修改、确认移除；凭证独立加密提交，Token 仅保存到当前标签页会话。
+| 功能     | 可以做什么                                                                |
+| -------- | ------------------------------------------------------------------------- |
+| 整理收藏 | 使用三级分类和彩色标签整理网站，支持移动、引用、批量操作及书签导入 / 导出 |
+| 快速查找 | 站内搜索、自定义搜索引擎，以及可以收藏和分享的固定分类链接                |
+| 选择外观 | Light、Super、Sim、Side、Shortcut、App 主题，支持暗色模式和手机布局       |
+| 在线维护 | 通过后台编辑网站、分类和设置，支持密码 / Token 登录                       |
+| 每日文字 | 展示每日一言、诗词或自定义文字，支持多个来源、日期变量和按天缓存          |
+| 扩展页面 | 配置横幅、分类图标、日历、倒计时、图片、新闻、HTML 和手机 PWA             |
 
-网站图标抓取、翻译、收录通知等联网辅助功能还会使用上游 API，不能把它们理解为完全离线功能。“登录后显示”的分类 / 网站标记属于前端显示控制，静态资源本身不提供数据保密机制。
+项目使用 Angular 21、TypeScript 5.9、ng-zorro-antd 和 Tailwind CSS，支持 GitHub、Gitee、GitLab 仓库。
+
+## 界面预览
+
+截图使用示例导航数据，展示当前项目的实际界面。点击图片可查看大图。
+
+| 网站管理                                                                        | 系统设置                                                                          |
+| ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| [![网站管理：搜索、筛选和编辑](docs/images/admin.webp)](docs/images/admin.webp) | [![系统设置：分栏配置站点](docs/images/settings.webp)](docs/images/settings.webp) |
+
+<details>
+<summary>查看暗色模式和手机界面</summary>
+
+![Side 暗色模式](docs/images/home-dark.webp)
+
+<img src="docs/images/mobile.webp" alt="发现导航手机界面" width="360" />
+
+</details>
 
 ## 本地运行
 
-建议使用 Node.js **22.12+ 或 24+**，以及 pnpm。使用完整的 Node.js 安装，确保 `node`、`npm` 和 `pnpm` 可用。
+准备 Node.js **22.12+ 或 24+** 和 pnpm **11**。
 
 ```bash
-git clone https://github.com/你的用户名/你的导航仓库.git
-cd 你的导航仓库
+git clone https://github.com/dragonadd/nav1.git
+cd nav1
 pnpm install --frozen-lockfile
 pnpm run start:reload
 ```
 
-打开 [http://localhost:7002](http://localhost:7002)。也可以运行 `pnpm start`，该命令关闭实时刷新。启动会先运行初始化，生成 `nav.config.json` 并整理现有导航数据。
+打开 [http://localhost:7002](http://localhost:7002)。后台入口是 `/system`。在线保存需要配置自己的 Git 仓库，并使用有写权限的 Token 登录。
 
-如果拿到的是源码压缩包，先安装依赖，再修改根目录的 [nav.config.yaml](nav.config.yaml)。在线保存需要关联一个可写的真实 Git 仓库；本地目录没有 `.git` 并不会自动建立远程仓库。
+## 部署
 
-## 配置
+### 1. 配置仓库
 
-仓库和部署配置在 [nav.config.yaml](nav.config.yaml)，网站展示内容通常在 **后台 → 站点设置** 中修改。
+Fork 项目或将源码上传到自己的 Git 仓库，在 [nav.config.yaml](nav.config.yaml) 填写仓库地址：
 
-| 字段                                              | 用途                                                                    |
-| ------------------------------------------------- | ----------------------------------------------------------------------- |
-| `gitRepoUrl`                                      | 导航源码 / 数据仓库，支持 `github.com`、`gitee.com`、`gitlab.com`       |
-| `branch`                                          | 默认 `auto`，跟随托管平台的部署分支；只有需要固定提交目标时才填写分支名 |
-| `imageRepoUrl`                                    | 图床仓库，可用 `?branch=分支名` 指定图床分支；GitLab 还需 `projectId`   |
-| `hashMode`                                        | GitHub Pages 设为 `true`；History 路由需要托管平台配置 SPA 回退         |
-| `email`                                           | 收录通知邮箱，相关功能依赖对应通知服务                                  |
-| `address`                                         | 兼容原有自有服务器 API；静态部署保持空值                                |
-| `password`、`port`、`mailConfig`、`XFAPIPassword` | 原有自有服务器配置，不是静态站点自定义登录密码                          |
+```yaml
+gitRepoUrl: https://github.com/你的用户名/你的仓库
+branch: auto
+address: ''
+hashMode: false
+imageRepoUrl: ''
+```
 
-例如，GitLab 仓库写法为 `https://gitlab.com/用户名/仓库?projectId=项目ID`，图床可写为 `https://gitlab.com/用户名/图片仓库?projectId=项目ID&branch=images`。图床仓库及指定分支需要提前创建，并为 Token 授予对应写权限。
+`branch: auto` 会跟随实际部署分支，后台内容和密码保存都提交到该分支。使用源码 ZIP 或没有 Git / 平台分支信息的构建环境时，填写具体分支名。
 
-不要将真实 Token 或静态登录密码写入 YAML、普通站点设置或导航数据。静态站点的登录密码通过下方后台入口管理。
+如需独立图床，填写 `imageRepoUrl`，并提前创建图床分支、授予写权限。GitLab 仓库还需提供 `projectId`，具体格式见 [配置说明](docs/usage.md#仓库与图床配置)。
 
-## 后台登录
+### 2. 选择托管平台
 
-后台入口仍然是 `/system`：
+构建命令为 `pnpm run build`，发布目录为 **`dist/browser`**。构建环境使用 Node.js **22.12+ 或 24+**，安装命令为 `pnpm install --frozen-lockfile`。
 
-| 部署方式             | 示例入口                                   |
-| -------------------- | ------------------------------------------ |
-| 根路径、History 路由 | `https://你的站点/system`                  |
-| 根路径、Hash 路由    | `https://你的站点/#/system`                |
-| GitHub Pages 子目录  | `https://用户名.github.io/仓库名/#/system` |
+| 平台                                             | 操作                                                                                    |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| [Cloudflare Pages](https://dash.cloudflare.com/) | 创建 Pages 项目，连接仓库并选择生产分支；框架预设选“无”，填写构建命令和发布目录         |
+| [Vercel](https://vercel.com/new)                 | 导入仓库，以仓库根目录为 Root Directory，填写构建命令和发布目录，选择 Production Branch |
+| [Netlify](https://app.netlify.com/)              | 从 Git 导入仓库，选择部署分支，使用根目录 `netlify.toml` 的构建配置                     |
 
-### 1. 首次使用 Token 登录
-
-尚未设置密码时，只显示 Token 登录。请输入有目标仓库写权限的 Token。
-
-- **GitHub**：[申请 Token](https://github.com/settings/personal-access-tokens/new)。优先只授权导航仓库及必要的图床仓库，给予 Contents 读写权限并设置到期时间。经典 Token 按目标仓库选择所需权限；后台普通数据编辑不需要修改 workflow 文件。
-- **Gitee**：[申请私人令牌](https://gitee.com/profile/personal_access_tokens)，授予目标仓库所需权限。
-- **GitLab**：[申请 Personal Access Token](https://gitlab.com/-/user_settings/personal_access_tokens)，配置 `projectId` 并授予相应 API / 仓库写权限。
-
-同平台图床使用主 Token；跨平台图床会额外显示独立图床 Token 输入框。两项验证成功后才保存登录会话。有写权限的协作者也可登录，不局限于仓库所有者。
-
-登录会验证 Git 用户及仓库权限，但 Token scope、分支保护和图床分支是否允许实际写入，仍由 Git 平台最终校验。
-
-### 2. 设置密码，以后二选一登录
-
-1. 进入 **后台 → 站点设置 → 登录密码管理**。
-2. 填写新登录密码和确认密码，至少 **8 个字符并包含字母和数字**，推荐使用 **12 位以上的独有随机密码**。
-3. 点击“保存登录密码”。后台会加密当前 Git 凭证，单独提交 `data/auth.json`。
-4. 等待 **当前分支重新部署成功**，刷新后默认提供密码登录，也能切换 Token 登录。
-
-修改密码使用同一入口；移除密码需要确认，部署成功后恢复为只提供 Token 登录。没有自动部署时，需要手动重新构建并发布。
-
-忘记密码、凭证损坏或 Token 过期时，使用有效 Token 登录当前分支，重新设置密码。密码解密后的 Git Token 验证失败会单独提示，不会被当成密码错误。两个窗口同时修改密码时，会拒绝旧版本覆盖并保留当前输入。
-
-### 3. 凭证与会话
-
-密码通过 PBKDF2-SHA-256（600,000 次）派生密钥，AES-256-GCM 加密主 Token 和必要时的独立图床 Token。仓库文件只有算法参数和密文，没有明文 Token、密码或密钥，并绑定主仓库、图床和提交分支。
-
-Token 仅写入当前标签页的 `sessionStorage`。刷新保留登录，退出登录清除会话；浏览器恢复会话或复制标签页可能保留存储。升级会清除旧 `localStorage` 凭证，需要重新登录。密码和派生密钥不保存到浏览器存储，信息页隐藏明文 Token。
-
-公开密文可以被下载后离线猜解。换密码或删除文件不能撤销旧密文中的 Token；需要撤销旧访问能力时，先在 Git 平台轮换 / 撤销 Token，再用新 Token 设置密码。自定义 HTML 和脚本必须可信，密码功能使用 HTTPS 或 localhost。
-
-详细格式、缓存、构建和保护边界见 [后台登录机制](docs/authentication.md)。
-
-## 构建与部署
-
-### 部署前准备
-
-1. Fork 项目或把当前源码上传到自己的 Git 仓库，提交源码和 `pnpm-lock.yaml`，不要上传 `node_modules`、`dist`。
-2. 修改 `nav.config.yaml`：`gitRepoUrl` 填自己的仓库，`branch` 保持 `auto`，静态部署保持 `address: ''`。构建会识别当前部署分支，后台内容和密码保存均提交到该分支，支持任意合法 Git 分支名。使用自己的图床时，同时配置 `imageRepoUrl` 并提前创建图床分支。
-3. GitHub Pages 自动工作流会在构建时启用 Hash 路由，其他平台保留 YAML 的 `hashMode`（通常用 `false`）。本地手动构建 Pages 时设置 `hashMode: true`。提交修改，再按下面的平台步骤部署。
-
-### 静态托管平台
-
-Netlify、Vercel 和 Cloudflare Pages 都可以连接 Git 仓库，后续后台保存触发 Git 提交时，平台会自动重新构建。
-
-| 平台                                             | 操作步骤                                                                                                                                                         |
-| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Netlify](https://app.netlify.com/)              | 新建站点，选择从 Git 导入并授权自己的仓库；选择部署分支，保留根目录 `netlify.toml` 的构建设置；点击部署。                                                        |
-| [Vercel](https://vercel.com/new)                 | 导入自己的仓库；项目根目录保持仓库根目录，构建命令填 `pnpm run build`，输出目录填 `dist/browser`；Production Branch 选择实际发布分支，YAML 保持 `branch: auto`。 |
-| [Cloudflare Pages](https://dash.cloudflare.com/) | 在 Workers & Pages 中创建 **Pages** 项目并连接 Git；选择仓库与生产分支，框架预设选“无”，构建命令填 `pnpm run build`，构建输出目录填 `dist/browser`；保存并部署。 |
-
-构建环境使用 Node.js **22.12+ 或 24+**；安装命令可设为 `pnpm install --frozen-lockfile`。Netlify 已在配置中指定 Node 22；Vercel 在项目设置选择 Node 版本；Cloudflare Pages 可添加环境变量 `NODE_VERSION=22.12.0`。部署成功后，先打开平台提供的默认域名确认首页正常，再添加自己的域名。
-
-**Cloudflare 部署任意分支**：保持 `branch: auto`，平台会自动注入 `CF_PAGES_BRANCH`，无需手动添加这个变量。在 Pages 的构建设置中选择实际生产分支，或在预览分支控制中允许需要的分支自动部署。后台页头的“提交分支”应与当前站点部署来源一致；例如 `release/v2.3` 站点会向 `release/v2.3` 保存。换分支后刷新并重新登录，原分支的密码凭证不能自动迁移，需要在新分支用 Token 登录后重新设置。
-
-`auto` 依次读取 Cloudflare、GitHub Actions、Netlify、Vercel、GitLab 的分支信息，最后使用本地 Git 分支。无法识别时会停止构建，不会猜测 `main`；源码 ZIP 或没有分支信息的环境可在 YAML 显式填写分支。
+Cloudflare Pages 可设置 `NODE_VERSION=22.12.0`。需要自动发布预览分支时，在平台的分支控制中启用对应分支。自定义域名在托管平台的项目设置中配置。
 
 ### GitHub Pages
 
-已内置 [自动发布工作流](.github/workflows/deploy-gh-pages.yml)，与 B 项目一样通过 GitHub Actions 部署：
+仓库包含 [GitHub Actions 发布工作流](.github/workflows/deploy-gh-pages.yml)：
 
-1. 将源码和工作流提交到自己的仓库，确认 `nav.config.yaml` 的 `gitRepoUrl` 是这个仓库、`branch` 保持 `auto`、`address` 为空。
-2. 打开仓库 **Settings → Pages**，将 **Build and deployment → Source** 设为 **GitHub Actions**。之前使用分支发布的站点，也切换为这个选项。
-3. 打开 **Actions**，如果 Fork 的工作流未启用，先点击启用；选择 **Deploy to GitHub Pages → Run workflow**，选择实际发布分支，触发首次部署。
-4. 等待工作流构建、部署均显示绿色对勾，访问 `https://用户名.github.io/仓库名/`；仓库名为 `用户名.github.io` 时，访问 `https://用户名.github.io/`。
+1. 提交源码和配置，在 **Settings → Pages → Source** 选择 **GitHub Actions**。
+2. 在 **Actions** 中启用工作流，选择 **Deploy to GitHub Pages → Run workflow** 和发布分支。
+3. 部署成功后访问 `https://用户名.github.io/仓库名/`。
 
-之后向发布分支提交代码或在后台保存内容、密码，都会自动重新部署，无需手动上传产物或创建 `gh-pages` 分支。工作流使用相对资源路径并启用 Hash 路由，根站点和仓库子目录都能使用；后台地址为站点地址加 `#/system`。
+自动发布默认跟随仓库默认分支。使用其他分支时，在 **Settings → Secrets and variables → Actions → Variables** 设置 `NAV_PAGES_BRANCH`，值为分支完整名称。
 
-**选择 Pages 自动发布分支**：未配置时使用仓库默认分支，仓库名和分支名都不固定。需要发布其他分支时，在 **Settings → Secrets and variables → Actions → Variables** 新建仓库变量 `NAV_PAGES_BRANCH`，值填该分支完整名称，YAML 仍保持 `branch: auto`，无需修改工作流。手动 Run workflow 可发布所选分支；后续自动发布跟随这个变量。GitHub Pages 同一仓库只有一个站点，所以其他分支提交会跳过发布，避免预览分支覆盖正式站点。
+工作流自动启用 Hash 路由，后台地址为站点地址加 `#/system`。发布分支后续的代码或后台内容提交会触发重新部署。
 
-仓库地址仍需显式填写，工作流会检查仓库和实际提交分支是否匹配。Cloudflare 的分支由 Pages 平台设置决定，不受 `NAV_PAGES_BRANCH` 影响。普通数据 / 密码提交无需另配部署 Token，工作流使用 GitHub 自带权限。
-
-自定义域名在 **Settings → Pages → Custom domain** 配置，并按 GitHub 提示设置 DNS。使用 Netlify、Vercel 或 Cloudflare Pages 时，可删除这个工作流，避免重复构建。
-
-### 首次使用与常见问题
-
-部署成功后打开 `/system`，GitHub Pages 使用 `/#/system`，子目录站点保留仓库名前缀。首次用具有仓库写权限的 Token 登录，再到 **系统设置 → 登录密码管理** 设置密码。后台修改和密码设置都需要等待该分支重新部署成功后生效。
-
-- **首页能打开，刷新后台出现 404**：检查 History 路由的 SPA 回退；GitHub Pages 使用 Hash 路由。
-- **部署成功但看不到更新**：保持 YAML `branch: auto`，核对后台显示的“提交分支”是否为平台实际部署分支，并检查最新构建和分支自动部署设置；显式填写分支时，两者应一致。
-- **图片无法上传**：确认图床仓库、图床分支已经存在，且 Token 有相应写权限。
-
-### 本地构建与发布目录
+### 手动构建
 
 ```bash
-# 普通静态托管
 pnpm run build
 
-# GitHub Pages，配合 hashMode: true
+# GitHub Pages 手动构建：先在 YAML 设置 hashMode: true
 pnpm run build-gh-pages
 ```
 
-发布目录均为 **`dist/browser`**。构建会生成页面模板和 SEO 内容；有效登录凭证单独发布到 `data/auth.json`。空白 / 移除凭证会清理资源，明文或损坏的凭证会阻止构建。
+将 `dist/browser` 发布到静态托管服务。手动发布时，后台保存后也需要重新构建和上传。
 
-连接 Git 仓库时，YAML 保持 `branch: auto`，后台会使用构建时识别的实际部署分支；只有显式填写分支时，才需要手动核对与发布来源一致。密码保存只完成 Git 提交，必须等该分支部署成功后才生效；请求时间戳不能提前读取尚未发布的文件。
+## 开始使用
 
-前端保留原有自有服务器 API 兼容入口，但当前目录没有服务器、Dockerfile 或 PM2 启动脚本。要使用 `address` 模式，需要另外提供兼容 API 服务；普通静态部署保持 `address` 为空。
+后台入口为 `/system`；Hash 路由使用 `/#/system`，子目录站点保留路径前缀。
 
-## 验证与维护
+1. **登录后台**：首次使用目标仓库的 Token 登录。可前往 [GitHub](https://github.com/settings/personal-access-tokens/new)、[Gitee](https://gitee.com/profile/personal_access_tokens) 或 [GitLab](https://gitlab.com/-/user_settings/personal_access_tokens) 创建 Token；GitHub 需要目标仓库的 Contents 读写权限。
+2. **整理网站**：在“网站管理”中搜索、编辑、移动网站或维护分类。点击“保存”提交内容，等待当前分支部署完成后刷新查看。
+3. **设置外观**：在“系统设置”中调整基础信息、主题、每日文字等内容。保存按钮提交所有分栏的修改。
+4. **设置登录密码**：进入独立的“登录密码管理”，设置至少 8 个字符、包含字母和数字的密码。部署完成后可选择密码或 Token 登录。
+
+Side 卡片支持登录后直接编辑；分类图标可填写图片网址或 Font Awesome 类名，如 `fas fa-film`、`fab fa-github`。
+
+请使用专用 Token 和强密码，通过 HTTPS 或 localhost 使用密码功能。需要撤销访问时，在 Git 平台撤销 / 轮换 Token。凭证与会话说明见 [后台登录机制](docs/authentication.md)；主题、每日文字和备份操作见 [使用说明](docs/usage.md)。
+
+## 常见问题
+
+- **刷新后台出现 404**：History 路由需要 SPA 回退；GitHub Pages 使用 Hash 路由。
+- **保存后没有看到更新**：查看最新部署是否成功，核对后台提交分支和平台发布分支。
+- **图标或图片上传失败**：检查图床仓库、分支和 Token 写权限。
+- **每日文字无法获取**：接口需要允许跨域访问；HTTPS 站点使用 HTTPS 接口，也可使用自定义文字。
+
+## 开发与维护
 
 ```bash
 pnpm test
 pnpm run lint
-# 构建后运行浏览器检查（需要 Chrome / Edge，或 Puppeteer 浏览器）
+
+# 构建后运行浏览器检查
 pnpm run test:auth-ui
-# 检查生产资源发布与明文凭证泄漏，完成后恢复普通构建
-pnpm run test:auth-bundle
+pnpm run test:themes
 ```
 
-认证测试使用测试凭证和内存 Git API，不写入真实远程仓库。Hash 路由可通过环境变量 `NAV_TEST_HASH_MODE=1` 验证；Windows PowerShell 使用 `$env:NAV_TEST_HASH_MODE = '1'`。
-
-主要目录：`src/view/` 为主题和后台页面，`src/components/` 为组件，`src/api/` 为 API，`data/` 为导航 / 配置数据，`scripts/` 为初始化和构建。`nav.config.json`、`src/index.html`、`src/generated/auth/` 和 `dist/` 为生成内容。
-
-升级前备份自己的 `data/` 和 YAML 配置，并检查源代码差异。本项目已做定制，合并上游时应逐项处理冲突，不能保证直接执行旧的自动合并命令适合所有副本。
+`src/view/` 是主题与后台页面，`src/components/` 是组件，`src/services/` 是服务，`data/` 保存导航与设置。升级或导入数据前，先备份自己的 `data/` 和 `nav.config.yaml`。
 
 ## 致谢与许可证
 
-原项目：[xjh22222228/nav](https://github.com/xjh22222228/nav)，作者 xiejiahe。后台双模式登录参考 [NavBlog](https://github.com/dragonadd/Navblog) 的实现，并适配导航站现有后台、图床和数据流程。
+项目基于 [nav](https://github.com/xjh22222228/nav)，作者 xiejiahe。后台登录与每日文字参考 [NavBlog](https://github.com/dragonadd/Navblog)，Side 布局灵感来自 [墨鱼手记](https://ddgksf2013.top/)。
 
 For commercial sites, themes, projects, and applications, keep your source code private/proprietary by purchasing a [Commercial License](https://official.nav3.cn/pricing).
 

@@ -31,10 +31,7 @@
     <h2>{{ $t('_adminVersionDetails') }}</h2>
     <div class="version-number">v{{ version }}</div>
     <p>{{ $t('_curVer') }}</p>
-    <a
-      href="https://github.com/xjh22222228/nav/releases"
-      target="_blank"
-      rel="noopener noreferrer"
+    <a [href]="versionUrl" target="_blank" rel="noopener noreferrer"
       >{{ $t('_adminViewReleases') }} →</a
     >
   </section>

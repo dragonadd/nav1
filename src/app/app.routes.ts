@@ -10,6 +10,11 @@ import { getDefaultTheme } from 'src/utils'
 
 export const routes: Routes = [
   {
+    path: 'index',
+    redirectTo: 'side',
+    pathMatch: 'full',
+  },
+  {
     path: 'sim',
     component: SimComponent,
     data: {},
@@ -64,10 +69,6 @@ export const routes: Routes = [
         loadComponent: () => import('src/view/system/collect/index.component'),
       },
       {
-        path: 'auth',
-        loadComponent: () => import('src/view/system/auth/index.component'),
-      },
-      {
         path: 'tag',
         loadComponent: () => import('src/view/system/tag/index.component'),
       },
@@ -78,6 +79,13 @@ export const routes: Routes = [
       {
         path: 'setting',
         loadComponent: () => import('src/view/system/setting/index.component'),
+      },
+      {
+        path: 'password',
+        loadComponent: () =>
+          import('src/components/login-password/index.component').then(
+            (module) => module.LoginPasswordComponent,
+          ),
       },
       {
         path: 'component',

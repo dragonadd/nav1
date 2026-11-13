@@ -6,7 +6,7 @@ import { Component } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import type { INavTwoProp, INavThreeProp, IWebProps } from 'src/types'
-import { navs, settings, search, tagList, internal, component } from 'src/store'
+import { navs, settings, search, tagList, component } from 'src/store'
 import { isLogin, removeWebsite } from 'src/utils/user'
 import { NzMessageService } from 'ng-zorro-antd/message'
 import { NzModalService } from 'ng-zorro-antd/modal'
@@ -71,7 +71,6 @@ import { cleanWebAttrs } from 'src/utils/pureUtils'
 export default class WebpComponent {
   readonly $t = $t
   readonly isSelfDevelop = isSelfDevelop
-  readonly internal = internal()
   readonly settings = settings()
   readonly gitRepoUrl = config.gitRepoUrl
   readonly isLogin = isLogin
@@ -79,13 +78,13 @@ export default class WebpComponent {
   showCreateModal = false
   syncLoading = false
   uploading = false
-  tabActive = 0
+  tabActive = 3
   oneSelect = -1
   twoSelect = -1
   threeSelect = -1
-  checkedAll = false
   setOfCheckedId = new Set<number>()
-  errorWebs: IWebProps[] = []
+  websiteKeyword = ''
+  errorOnly = false
 
   constructor(
     private modal: NzModalService,
@@ -137,62 +136,67 @@ export default class WebpComponent {
   }
 
   get websiteTableData(): IWebProps[] {
+    const keyword = this.websiteKeyword.trim().toLowerCase()
     try {
-      const data = this.threeTableData.find(
-        (item) => item.id === this.threeSelect,
-      )
-      if (data) {
-        return data.nav
-      }
-      return this.errorWebs
+      return this.navs()
+        .filter((one) => this.oneSelect === -1 || one.id === this.oneSelect)
+        .flatMap((one) => one.nav)
+        .filter((two) => this.twoSelect === -1 || two.id === this.twoSelect)
+        .flatMap((two) => two.nav)
+        .filter(
+          (three) => this.threeSelect === -1 || three.id === this.threeSelect,
+        )
+        .flatMap((three) => three.nav)
+        .filter(
+          (web) =>
+            (!this.errorOnly || web.ok === false) &&
+            [web.name, web.url, web.desc]
+              .join(' ')
+              .toLowerCase()
+              .includes(keyword),
+        )
     } catch {
-      return this.errorWebs
+      return []
     }
   }
 
-  getErrorWebs() {
-    this.oneSelect = -1
-    this.twoSelect = -1
-    this.threeSelect = -1
-    this.onTabChange()
-    const errorWebs: IWebProps[] = []
-    function r(nav: any) {
-      if (!Array.isArray(nav)) return
-
-      for (let i = 0; i < nav.length; i++) {
-        const item = nav[i]
-        if (item.url && item.ok === false) {
-          errorWebs.push(item)
-        } else {
-          r(item.nav)
-        }
-      }
-    }
-    r(this.navs())
-    this.errorWebs = errorWebs
-    if (errorWebs.length <= 0) {
-      this.message.success('No error!')
-    } else {
-      this.message.warning(`检测出 ${errorWebs.length} 个网站疑似异常`)
-    }
+  get canSortWebsites() {
+    return (
+      this.threeIndex >= 0 && !this.websiteKeyword.trim() && !this.errorOnly
+    )
   }
 
-  onCheckAll(checked: boolean) {
-    this.setOfCheckedId.clear()
-    this.checkedAll = checked
-    const data = [
+  get activeTableData() {
+    return [
       this.navs(),
       this.twoTableData,
       this.threeTableData,
       this.websiteTableData,
-    ]
-    data[this.tabActive].forEach((item) => {
-      if (checked) {
-        this.setOfCheckedId.add(item.id)
-      } else {
-        this.setOfCheckedId.delete(item.id)
-      }
-    })
+    ][this.tabActive]
+  }
+
+  get checkedIds() {
+    return this.activeTableData
+      .filter((item) => this.setOfCheckedId.has(item.id))
+      .map((item) => item.id)
+  }
+
+  get checkedAll() {
+    const data = this.activeTableData
+    return (
+      data.length > 0 && data.every((item) => this.setOfCheckedId.has(item.id))
+    )
+  }
+
+  toggleErrorFilter() {
+    this.errorOnly = !this.errorOnly
+    this.onTabChange()
+  }
+
+  onCheckAll(checked: boolean) {
+    this.setOfCheckedId.clear()
+    if (checked)
+      this.activeTableData.forEach((item) => this.setOfCheckedId.add(item.id))
   }
 
   onItemChecked(id: number, checked: boolean) {
@@ -204,12 +208,16 @@ export default class WebpComponent {
   }
 
   async onBatchDelete() {
+    if (this.checkedIds.length === 0) {
+      this.setOfCheckedId.clear()
+      return
+    }
     switch (this.tabActive) {
       case 0:
       case 1:
       case 2:
         event.emit('DELETE_MODAL', {
-          ids: [...this.setOfCheckedId],
+          ids: this.checkedIds,
           isClass: true,
           onComplete: () => {
             this.onTabChange()
@@ -219,12 +227,7 @@ export default class WebpComponent {
 
       case 3:
         event.emit('DELETE_MODAL', {
-          ids: [...this.setOfCheckedId],
-          ok: () => {
-            if (this.errorWebs.length) {
-              this.getErrorWebs()
-            }
-          },
+          ids: this.checkedIds,
           onComplete: () => {
             this.onTabChange()
           },
@@ -395,10 +398,12 @@ export default class WebpComponent {
   }
 
   onTabChange(index?: number) {
-    this.errorWebs = []
-    this.tabActive = index ?? this.tabActive
+    if (index !== undefined) {
+      this.tabActive = index
+      this.websiteKeyword = ''
+      this.errorOnly = false
+    }
     this.setOfCheckedId.clear()
-    this.checkedAll = false
   }
 
   // 上移一级
@@ -418,7 +423,7 @@ export default class WebpComponent {
 
   // 下移一级
   moveOneDown(index: number): void {
-    if (index === this.navs.length - 1) {
+    if (index < 0 || index >= this.navs().length - 1) {
       return
     }
     const current = this.navs()[index]
@@ -515,6 +520,7 @@ export default class WebpComponent {
 
   // 上移网站
   moveWebUp(index: number): void {
+    if (!this.canSortWebsites) return
     try {
       if (index === 0) {
         return
@@ -543,6 +549,7 @@ export default class WebpComponent {
 
   // 下移网站
   moveWebDown(index: number): void {
+    if (!this.canSortWebsites) return
     try {
       if (
         index ===

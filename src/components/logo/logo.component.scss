@@ -34,3 +34,12 @@
 .common-icon {
   transition: all 0.1s linear;
 }
+
+.font-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  vertical-align: middle;
+  color: inherit;
+}

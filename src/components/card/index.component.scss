@@ -1,3 +1,141 @@
+:host(.with-quick-edit) {
+  display: block;
+  position: relative;
+
+  .standard .top,
+  .retro2 .top,
+  .column2 .title-bar,
+  .original2 .wrapper {
+    padding-right: 58px;
+  }
+
+  .icon2 {
+    padding-top: 36px;
+  }
+}
+
+.quick-edit {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 30px;
+  padding: 4px 7px;
+  color: #2563eb;
+  background: #fff;
+  border: 1px solid #dbeafe;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  box-shadow: 0 1px 4px #1e293b12;
+
+  &:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+  }
+}
+
+.side-card {
+  min-height: 78px;
+  overflow: hidden;
+  border: 1px solid var(--side-border, #e5e9ef);
+  border-radius: 9px;
+  background: var(--side-card, #fff);
+  box-shadow: 0 1px 2px #1e293b04;
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s,
+    border-color 0.15s;
+  .side-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 78px;
+    padding: 14px;
+    color: var(--side-text, #303b4c);
+    &:focus-visible {
+      outline: 2px solid #3b82f6;
+      outline-offset: -3px;
+    }
+  }
+  .side-card-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .title {
+    color: var(--side-text, #303b4c);
+    font-size: 14px;
+    font-weight: 650;
+  }
+  .desc {
+    margin-top: 3px;
+    color: var(--side-muted, #738095);
+    font-size: 12px;
+  }
+  .title,
+  .desc {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  &.has-edit .side-card-info {
+    padding-right: 43px;
+  }
+  tag-list {
+    display: block;
+    padding: 0 14px 10px;
+  }
+}
+:host(.with-quick-edit):has(.side-card) .quick-edit {
+  top: 10px;
+  right: 8px;
+  min-height: 25px;
+  padding: 3px 5px;
+  border-color: transparent;
+  box-shadow: none;
+  color: var(--side-accent, #3b82f6);
+  background: var(--side-card, #fff);
+  font-size: 11px;
+}
+@media (hover: hover) {
+  .side-card:hover {
+    transform: translateY(-2px);
+    border-color: #3b82f655;
+    box-shadow: 0 6px 16px #1e293b0a;
+  }
+}
+@media (max-width: 768px) {
+  .side-card {
+    .side-link {
+      min-height: 122px;
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 10px;
+      padding: 12px;
+    }
+    .side-card-info {
+      width: 100%;
+    }
+    &.has-edit .side-card-info {
+      padding-right: 0;
+    }
+    .title {
+      font-size: 13px;
+    }
+    .desc {
+      font-size: 11px;
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .side-card {
+    transition: none;
+  }
+}
+
 @media (hover: hover) and (pointer: fine) {
   .example2,
   .original2 {

@@ -1,3 +1,14 @@
+<button
+  *ngIf="showEdit && (isLogin || permissions.edit)"
+  type="button"
+  class="quick-edit dark-bg-gary dark-white dark-border-color"
+  [attr.aria-label]="$t('_edit') + ': ' + dataSource.name"
+  (click)="editFromCard($event)"
+>
+  <nz-icon nzType="edit" />
+  <span>{{ $t('_edit') }}</span>
+</button>
+
 <div
   class="card-container progrcode"
   *ngIf="isCode; else other"
@@ -12,6 +23,37 @@
 <ng-template #other>
   <ng-container [ngSwitch]="cardStyle">
     <div class="card-parent">
+      <div
+        class="side-card"
+        *ngSwitchCase="'side'"
+        [class.has-edit]="showEdit && (isLogin || permissions.edit)"
+      >
+        <a
+          class="side-link"
+          [href]="dataSource.url"
+          (click)="jumpService.goUrl($event, dataSource.url)"
+        >
+          <app-logo
+            [src]="dataSource.icon"
+            [name]="dataSource.name"
+            [size]="36"
+            [radius]="7"
+          />
+          <div class="side-card-info">
+            <div
+              class="title"
+              [innerHTML]="dataSource.name"
+              [title]="dataSource.__name__ || dataSource.name"
+            ></div>
+            <div
+              class="desc"
+              [innerHTML]="dataSource.desc"
+              [title]="dataSource.__desc__ || dataSource.desc"
+            ></div>
+          </div>
+        </a>
+        <tag-list *ngIf="dataSource.tags?.length" [data]="dataSource.tags" />
+      </div>
       <span
         nz-icon
         nzType="stop"
@@ -136,7 +178,12 @@
           <app-breadcrumb [data]="dataSource" />
         </div>
 
-        <div class="wrapper ellipsis">
+        <div
+          class="wrapper ellipsis"
+          [style.padding-right.px]="
+            showEdit && (isLogin || permissions.edit) ? 58 : 0
+          "
+        >
           <app-logo [src]="dataSource.icon" [name]="dataSource.name" />
           <div
             class="right-box ellipsis"

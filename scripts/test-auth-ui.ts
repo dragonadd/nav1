@@ -237,12 +237,59 @@ try {
   )
   assert.equal(await hasSession(), true)
   assert.equal(await page.evaluate(() => localStorage.getItem('token')), null)
+  assert.equal(
+    await page.$('[data-admin-route="auth"]'),
+    null,
+    '后台不再提供上游绑定域名入口',
+  )
+  await page.goto(route('system/info'), { waitUntil: 'networkidle0' })
+  const versionUrl = new URL(
+    await page.$eval(
+      '.info-card:last-child a',
+      (link) => (link as HTMLAnchorElement).href,
+    ),
+  )
+  const repositoryUrl = new URL(config.gitRepoUrl)
+  assert.equal(versionUrl.origin, repositoryUrl.origin)
+  assert.equal(
+    versionUrl.pathname,
+    repositoryUrl.pathname.replace(/(?:\.git)?\/?$/, '') +
+      (repositoryUrl.hostname === 'gitlab.com' ? '/-/tree/' : '/tree/') +
+      encodeURIComponent(config.branch),
+    '版本入口应指向当前配置的仓库和实际部署分支',
+  )
+  assert.equal(versionUrl.search, '')
+  await page.goto(route('system/auth'), { waitUntil: 'networkidle0' })
+  assert.equal(
+    await page.$eval('.admin-page-heading h1', (heading) =>
+      heading.textContent?.trim(),
+    ),
+    '网站管理',
+    '旧绑定域名地址应回到网站管理',
+  )
   await page.goto(route('system/setting'), { waitUntil: 'networkidle0' })
-  await page.waitForSelector('#nav-new-login-password')
+  assert.equal(
+    await page.$('#nav-new-login-password'),
+    null,
+    '登录密码管理应从系统设置移到独立页面',
+  )
+  assert.ok(
+    await page.$('[data-admin-route="password"]'),
+    '后台应提供独立登录密码菜单',
+  )
   await page.screenshot({ path: path.join(previews, 'settings-desktop.png') })
   await page.$$eval(
-    'system-setting > form > nz-tabs .ant-tabs-tab-btn',
-    (tabs) => (tabs[0] as HTMLElement).click(),
+    'system-setting .settings-sections > nz-tabs-nav .ant-tabs-tab-btn',
+    (tabs) => {
+      ;(
+        tabs.find(
+          (tab) => tab.textContent?.trim() === '主题设置',
+        ) as HTMLElement
+      ).click()
+    },
+  )
+  await page.$$eval('system-setting .theme-tabs .ant-tabs-tab-btn', (tabs) =>
+    (tabs[0] as HTMLElement).click(),
   )
   await page.$eval(
     'nz-radio-group[formcontrolname="lightCardStyle"]',
@@ -314,7 +361,7 @@ try {
     true,
   )
   await page.goto(route('system/setting'), { waitUntil: 'networkidle0' })
-  await page.waitForSelector('#nav-new-login-password')
+  await page.waitForSelector('system-setting')
   await page.setViewport({ width: 390, height: 844 })
   await page.waitForFunction(
     () =>
@@ -355,6 +402,14 @@ try {
   )
   await page.screenshot({ path: path.join(previews, 'settings-mobile.png') })
   await page.setViewport({ width: 1440, height: 960 })
+  await page.goto(route('system/password'), { waitUntil: 'networkidle0' })
+  await page.waitForSelector('#nav-new-login-password')
+  assert.equal(
+    await page.$eval('.admin-page-heading h1', (heading) =>
+      heading.textContent?.trim(),
+    ),
+    '登录密码管理',
+  )
   await enter('#nav-new-login-password', 'weak')
   await enter('#nav-confirm-login-password', 'weak')
   assert.equal(

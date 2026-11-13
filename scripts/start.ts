@@ -4,6 +4,8 @@
 
 import fs from 'fs'
 import { prepareAuth } from './prepare-auth'
+import { migrateSideSettings } from '../src/utils/side-settings'
+import { initializeDailyTextSettings } from '../src/utils/daily-text'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc.js'
 import timezone from 'dayjs/plugin/timezone.js'
@@ -363,7 +365,7 @@ const main = async () => {
     const banner2 =
       'https://gcore.jsdelivr.net/gh/xjh22222228/public@gh-pages/nav/banner2.jpg'
     const backgroundImg =
-      'https://gcore.jsdelivr.net/gh/xjh22222228/public@gh-pages/nav/background.jpg'
+      'https://gcore.jsdelivr.net/gh/dragonadd/picx-images-hosting@master/blog/桐谷直叶—狙击枪.png'
 
     settings.favicon ??=
       'https://gcore.jsdelivr.net/gh/xjh22222228/public@gh-pages/nav/logo.svg'
@@ -394,6 +396,9 @@ const main = async () => {
     settings.showThemeToggle ??= true
     settings.logo ||= ''
     settings.darkLogo ||= ''
+
+    migrateSideSettings(settings)
+    initializeDailyTextSettings(settings)
 
     settings.lightDocTitle ||= ''
     settings.lightCardStyle ||= 'standard'

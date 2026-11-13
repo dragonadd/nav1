@@ -40,7 +40,13 @@ import type { IComponentItemProps, IWebProps, ThemeType } from 'src/types'
 import event from 'src/utils/mitt'
 import footTemplate from 'src/components/footer/template'
 import { replaceJsdelivrCDN } from 'src/utils/pureUtils'
-import { LoginPasswordComponent } from 'src/components/login-password/index.component'
+import {
+  DAILY_TEXT_SOURCES,
+  initializeDailyTextSettings,
+  parseDailySources,
+  sourceText,
+  dailyTextLimit,
+} from 'src/utils/daily-text'
 
 // 额外添加的字段，但不添加到配置中
 const extraForm: Record<string, any> = {
@@ -70,7 +76,6 @@ const extraForm: Record<string, any> = {
     UploadImageComponent,
     UploadFileComponent,
     CardComponent,
-    LoginPasswordComponent,
   ],
   selector: 'system-setting',
   templateUrl: './index.component.html',
@@ -83,7 +88,9 @@ export default class SystemSettingComponent {
   validateForm!: FormGroup
   submitting: boolean = false
   settings = settings()
+  readonly dailySources = DAILY_TEXT_SOURCES
   tabActive = 0
+  sectionActive = 0
   componentOptions: any[] = []
   actionOptions = [
     {
@@ -122,6 +129,7 @@ export default class SystemSettingComponent {
     private notification: NzNotificationService,
     private message: NzMessageService,
   ) {
+    initializeDailyTextSettings(this.settings)
     const themeMap: Record<ThemeType, number> = {
       Light: 0,
       Super: 1,
@@ -177,8 +185,17 @@ export default class SystemSettingComponent {
       .setValue(footTemplate[v]?.trim?.() || '')
   }
 
+  addDailySource(name: string) {
+    const field = this.validateForm.get('hitokotoSources')!
+    const lines = (field.value || '')
+      .split('\n')
+      .map((line: string) => line.trim())
+      .filter(Boolean)
+    if (!lines.includes(name)) field.setValue([...lines, name].join('\n'))
+  }
+
   onLogoChange(data: any, key: string) {
-    this.settings[key] = data.cdn || ''
+    this.settings[key] = (data.cdn ?? data.target?.value ?? '').trim()
     this.validateForm.get(key)?.setValue(this.settings[key])
   }
 
@@ -269,11 +286,28 @@ export default class SystemSettingComponent {
       return
     }
 
+    const daily = this.validateForm.value
+    try {
+      daily.hitokotoSources = sourceText(daily).trim()
+      daily.hitokotoCustomText = (daily.hitokotoCustomText || '').trim()
+      daily.hitokotoTitle =
+        (daily.hitokotoTitle || '').trim() || $t('_dailyTitle')
+      daily.hitokotoMaxLength = dailyTextLimit(daily.hitokotoMaxLength)
+      if (daily.hitokotoEnable !== false) {
+        const sources = parseDailySources(daily.hitokotoSources)
+        if (!sources.length && !daily.hitokotoCustomText)
+          throw new Error($t('_dailyRequired'))
+      }
+    } catch (error: any) {
+      this.message.error(error.message)
+      return
+    }
+
     return new Promise((resolve, reject) => {
       function filterImage(item: Record<string, any>) {
         return item['src'] || item['url'][0] === CODE_SYMBOL
       }
-      const formValues = this.validateForm.value
+      const formValues = daily
       const values = {
         ...formValues,
         favicon: this.settings.favicon,
