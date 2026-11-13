@@ -34,15 +34,15 @@ Open [http://localhost:7002](http://localhost:7002). `pnpm start` disables live 
 
 Deployment and repository settings are in [nav.config.yaml](nav.config.yaml). Most display settings are edited in **Admin → Site settings**.
 
-| Field                                             | Purpose                                                                |
-| ------------------------------------------------- | ---------------------------------------------------------------------- |
-| `gitRepoUrl`                                      | Source / data repository on GitHub, Gitee or GitLab                    |
-| `branch`                                          | Actual commit branch; it must match the deployed source branch         |
-| `imageRepoUrl`                                    | Image repository; `?branch=NAME` selects its branch                    |
-| `hashMode`                                        | Set to `true` on GitHub Pages; History routing requires SPA fallback   |
-| `email`                                           | Submission notification address; requires the corresponding service    |
-| `address`                                         | Existing self-hosted API compatibility; leave empty for static hosting |
-| `password`, `port`, `mailConfig`, `XFAPIPassword` | Existing server settings, separate from static admin login passwords   |
+| Field                                             | Purpose                                                                                                 |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `gitRepoUrl`                                      | Source / data repository on GitHub, Gitee or GitLab                                                     |
+| `branch`                                          | Defaults to `auto`, following the deployment branch; use an explicit name only to pin the commit target |
+| `imageRepoUrl`                                    | Image repository; `?branch=NAME` selects its branch                                                     |
+| `hashMode`                                        | Set to `true` on GitHub Pages; History routing requires SPA fallback                                    |
+| `email`                                           | Submission notification address; requires the corresponding service                                     |
+| `address`                                         | Existing self-hosted API compatibility; leave empty for static hosting                                  |
+| `password`, `port`, `mailConfig`, `XFAPIPassword` | Existing server settings, separate from static admin login passwords                                    |
 
 GitLab URLs require `projectId`, for example `https://gitlab.com/USER/REPO?projectId=123`. An image URL may additionally contain `&branch=images`. Create the image repository and branch beforehand and grant the Token the required access.
 
@@ -90,7 +90,7 @@ See [Authentication details](docs/authentication.md) for formats, cache behavior
 ### Before deployment
 
 1. Fork the project or upload this source to your own Git repository. Commit the source and `pnpm-lock.yaml`; exclude `node_modules` and `dist`.
-2. Set `gitRepoUrl` to your repository and `branch` to the deployed source branch, usually `main`. Keep `address: ''` for static hosting. Configure your image repository and create its branch beforehand if needed.
+2. Set `gitRepoUrl` to your repository and keep `branch: auto` and `address: ''`. Builds resolve the actual deployment branch; content and password commits target that branch. Any valid Git branch name is supported. Configure your image repository and create its branch beforehand if needed.
 3. The GitHub Pages workflow enables Hash routing during its build. Other platforms keep YAML `hashMode`, usually `false`. For a local manual Pages build, set `hashMode: true`. Commit the configuration before importing the repository.
 
 ### Git-connected hosting
@@ -100,23 +100,29 @@ These platforms rebuild automatically when admin changes create a Git commit.
 | Platform                                         | Steps                                                                                                                                                                                                   |
 | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [Netlify](https://app.netlify.com/)              | Create a site from Git, authorize your repository and select the source branch. Keep the root `netlify.toml` settings and deploy.                                                                       |
-| [Vercel](https://vercel.com/new)                 | Import the repository, use its root as Root Directory, set Build Command to `pnpm run build` and Output Directory to `dist/browser`. Match Production Branch to YAML `branch`, then deploy.             |
+| [Vercel](https://vercel.com/new)                 | Import the repository, use its root as Root Directory, set Build Command to `pnpm run build` and Output Directory to `dist/browser`. Select the actual Production Branch and keep YAML `branch: auto`.  |
 | [Cloudflare Pages](https://dash.cloudflare.com/) | Create a **Pages** project under Workers & Pages and connect Git. Select the repository and production branch, choose no framework preset, use `pnpm run build` and output `dist/browser`, then deploy. |
 
 Use Node.js **22.12+ or 24+**. If an install command is requested, use `pnpm install --frozen-lockfile`. Netlify already specifies Node 22; select the Node version in Vercel settings, or set `NODE_VERSION=22.12.0` in Cloudflare Pages. Check the platform's default domain before adding a custom domain.
+
+**Any Cloudflare branch:** keep `branch: auto`; Cloudflare supplies `CF_PAGES_BRANCH` automatically. Select the actual production branch or allow the desired preview branches. The admin commit branch should match the deployed source; for example, a `release/v2.3` site saves to `release/v2.3`. After switching branches, refresh and log in with a Token to set a new password. Old branch credentials are not migrated automatically.
+
+Automatic resolution checks Cloudflare, GitHub Actions, Netlify, Vercel and GitLab branch metadata, then the local Git branch. Missing metadata stops the build instead of guessing `main`. For source ZIPs or environments without branch metadata, specify a branch explicitly.
 
 ### GitHub Pages
 
 The included [deployment workflow](.github/workflows/deploy-gh-pages.yml) uses GitHub Actions, like project B:
 
-1. Commit the source and workflow to your own repository. Set YAML `gitRepoUrl` to that repository, `branch` to `main`, and keep `address` empty.
+1. Commit the source and workflow to your own repository. Set YAML `gitRepoUrl` to that repository, keep `branch: auto`, and keep `address` empty.
 2. In **Settings → Pages**, choose **GitHub Actions** under **Build and deployment → Source**. Switch existing branch-based Pages sites to this setting too.
-3. Open **Actions** and enable workflows if requested for a fork. Select **Deploy to GitHub Pages → Run workflow**, using `main` for the first deployment.
+3. Open **Actions** and enable workflows if requested for a fork. Select **Deploy to GitHub Pages → Run workflow** and choose the actual publishing branch.
 4. Wait for both build and deploy to succeed, then visit `https://USER.github.io/REPO/`, or `https://USER.github.io/` for a repository named `USER.github.io`.
 
-Later pushes to `main`, including admin content and password commits, deploy automatically. No manual upload or `gh-pages` branch is required. Relative assets and build-time Hash routing support both root and project sites; append `#/system` to the site URL for admin.
+Later pushes to the publishing branch, including admin content and password commits, deploy automatically. No manual upload or `gh-pages` branch is required. Relative assets and build-time Hash routing support both root and project sites; append `#/system` to the site URL for admin.
 
-A keeps explicit repository configuration rather than B's `auto` resolution. The build checks that the configured repository and branch match the workflow source. To deploy another branch, change both workflow `on.push.branches` and YAML `branch`. No extra deployment Token is needed; the workflow uses GitHub's built-in permissions.
+**Choose the Pages publishing branch:** automatic deployment uses the repository's default branch unless a repository Actions variable `NAV_PAGES_BRANCH` is set. For another branch, create that variable under **Settings → Secrets and variables → Actions → Variables**, using its full name. Keep YAML `branch: auto`; no workflow edits are needed. Manual Run workflow publishes its selected branch; subsequent automatic deployments follow the variable. GitHub Pages has one site per repository, so pushes to other branches skip deployment rather than overwriting it.
+
+A keeps an explicit repository URL and validates it against the workflow source. Cloudflare branch settings are independent of `NAV_PAGES_BRANCH`. No extra deployment Token is needed.
 
 Configure a custom domain under **Settings → Pages → Custom domain** and follow GitHub's DNS instructions. If deploying to Netlify, Vercel or Cloudflare Pages, remove this workflow to avoid duplicate builds.
 
@@ -125,7 +131,7 @@ Configure a custom domain under **Settings → Pages → Custom domain** and fol
 Open `/system`, or `/#/system` on GitHub Pages, keeping any project-path prefix. Log in with a writable repository Token, then configure a password under **Site settings → Login password management**. Changes take effect after the same branch deploys successfully.
 
 - **Refreshing admin returns 404:** check SPA fallback for History routing; use Hash routing on GitHub Pages.
-- **Updates are missing:** match the deployed source branch to YAML `branch` and check the latest build. Manual publishing requires rebuilding and uploading again.
+- **Updates are missing:** keep YAML `branch: auto`, compare the admin's resolved commit branch with the platform's deployed source, and check the latest build and automatic branch deployment settings. Explicit branch names should match the deployed source.
 - **Image uploads fail:** create the image repository and branch, and grant the Token write access.
 
 ### Local build and output
@@ -138,7 +144,7 @@ pnpm run build-gh-pages
 
 Publish **`dist/browser`**. The build generates the page template and SEO content. Valid encrypted credentials are published separately at `data/auth.json`; blank / removed credentials are cleaned up, while plaintext or damaged credentials stop the build.
 
-The deployed source branch must match YAML `branch`. Saving a password completes a Git commit, not deployment; a timestamp cannot fetch a version that has not been published.
+Keep YAML `branch: auto` to use the branch resolved during the build. Match the deployed source manually only when specifying an explicit branch name. Saving a password completes a Git commit, not deployment; a timestamp cannot fetch a version that has not been published.
 
 The frontend retains self-hosted API compatibility, but this directory does not include server code, a Dockerfile or PM2 startup scripts. The `address` mode needs a separately supplied compatible API server.
 

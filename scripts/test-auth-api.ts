@@ -48,6 +48,11 @@ NProgress.start = () => NProgress
 NProgress.done = () => NProgress
 
 const { default: config } = await import('../nav.config.json')
+const expectedBranch = config.branch
+assert.ok(
+  typeof expectedBranch === 'string' && expectedBranch.length > 0,
+  'API 必须使用初始化生成的实际部署分支',
+)
 const originalConfig = { ...config }
 const { default: http } = await import('../src/utils/http.ts')
 const api = await import('../src/api/index.ts')
@@ -86,7 +91,19 @@ http.defaults.adapter = async (request) => {
       email: 'test@example.test',
       avatar_url: '',
     }
-  else if (
+  else if (url.endsWith('/contents/data/settings.json')) {
+    if (method === 'get') {
+      assert.equal(
+        request.params.ref,
+        expectedBranch,
+        '普通设置读取必须使用部署分支',
+      )
+      data = { sha: 'settings-sha' }
+    } else {
+      writes.push({ method, url, body, params: request.params })
+      data = { commit: { sha: 'test-settings-commit' } }
+    }
+  } else if (
     /\/contents\/data\/auth\.json$|\/repository\/files\/data%2Fauth\.json$/.test(
       url,
     ) &&
@@ -177,6 +194,16 @@ const auth = new AuthService()
 await auth.login({ token })
 assert.equal(user.getToken(), token)
 assert.equal(local.getItem('token'), null)
+await api.updateFileContent({
+  path: 'data/settings.json',
+  content: '{}',
+  message: 'deployment branch settings save',
+})
+assert.equal(
+  writes.at(-1)?.body.branch,
+  expectedBranch,
+  '普通后台保存必须提交当前部署分支',
+)
 user.removeToken()
 
 config.imageRepoUrl = 'https://gitee.com/dragonadd/images?branch=main'
@@ -246,7 +273,11 @@ try {
     await assert.rejects(auth.setPassword(password, 'mismatch'))
     await auth.setPassword(password, password)
     assert.equal(writes.length, 1)
-    assert.equal(writes[0].body.branch, config.branch)
+    assert.equal(
+      writes[0].body.branch,
+      expectedBranch,
+      '密码管理必须提交当前部署分支',
+    )
     const saved = file as {
       content: string
       sha: string

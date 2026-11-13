@@ -1,9 +1,9 @@
-# 参考 NavBlog，保留 A 的配置和相对资源路径；后台提交 main 后自动发布。
+# 只自动发布仓库变量 NAV_PAGES_BRANCH 指定的分支；未设置时使用仓库默认分支。
 name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: ['**']
   workflow_dispatch:
 
 permissions:
@@ -11,12 +11,28 @@ permissions:
   pages: write
   id-token: write
 
-concurrency:
-  group: pages
-  cancel-in-progress: true
-
 jobs:
+  select:
+    runs-on: ubuntu-latest
+    outputs:
+      publish: ${{ steps.choose.outputs.publish }}
+    steps:
+      - id: choose
+        uses: actions/github-script@v7
+        env:
+          NAV_PAGES_BRANCH: ${{ vars.NAV_PAGES_BRANCH }}
+        with:
+          script: |
+            const branch = context.ref.startsWith('refs/heads/') ? context.ref.slice(11) : '';
+            const target = process.env.NAV_PAGES_BRANCH || context.payload.repository.default_branch;
+            core.setOutput('publish', Boolean(branch && (context.eventName === 'workflow_dispatch' || branch === target)));
+
   build:
+    needs: select
+    if: needs.select.outputs.publish == 'true'
+    concurrency:
+      group: pages-build
+      cancel-in-progress: true
     runs-on: ubuntu-latest
     env:
       NAV_GITHUB_PAGES: 'true'
@@ -39,6 +55,9 @@ jobs:
 
   deploy:
     needs: build
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     environment:
       name: github-pages

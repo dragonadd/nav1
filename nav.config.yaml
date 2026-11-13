@@ -12,8 +12,9 @@
 # 作者 GitLab 仓库地址 https://gitlab.com/xjh22222228/nav?projectId=68880543, projectId 是项目 ID，可在仓库页面中找到
 gitRepoUrl: https://github.com/dragonadd/nav1
 
-# Fork 部署分支
-branch: main
+# 后台提交分支：auto 跟随托管平台的部署分支，本地跟随当前 Git 分支
+# 需要固定目标时才填写具体分支；ZIP 或无 Git 的构建环境需显式填写
+branch: auto
 
 # 默认Fork仓库
 # 仓库必须自己提前创建，如果打算长期使用本软件，建议每个人都创建一个新的仓库作为图片存储

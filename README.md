@@ -36,15 +36,15 @@ pnpm run start:reload
 
 仓库和部署配置在 [nav.config.yaml](nav.config.yaml)，网站展示内容通常在 **后台 → 站点设置** 中修改。
 
-| 字段                                              | 用途                                                                  |
-| ------------------------------------------------- | --------------------------------------------------------------------- |
-| `gitRepoUrl`                                      | 导航源码 / 数据仓库，支持 `github.com`、`gitee.com`、`gitlab.com`     |
-| `branch`                                          | 后台实际提交的分支，必须与站点部署来源一致；当前配置为 `main`         |
-| `imageRepoUrl`                                    | 图床仓库，可用 `?branch=分支名` 指定图床分支；GitLab 还需 `projectId` |
-| `hashMode`                                        | GitHub Pages 设为 `true`；History 路由需要托管平台配置 SPA 回退       |
-| `email`                                           | 收录通知邮箱，相关功能依赖对应通知服务                                |
-| `address`                                         | 兼容原有自有服务器 API；静态部署保持空值                              |
-| `password`、`port`、`mailConfig`、`XFAPIPassword` | 原有自有服务器配置，不是静态站点自定义登录密码                        |
+| 字段                                              | 用途                                                                    |
+| ------------------------------------------------- | ----------------------------------------------------------------------- |
+| `gitRepoUrl`                                      | 导航源码 / 数据仓库，支持 `github.com`、`gitee.com`、`gitlab.com`       |
+| `branch`                                          | 默认 `auto`，跟随托管平台的部署分支；只有需要固定提交目标时才填写分支名 |
+| `imageRepoUrl`                                    | 图床仓库，可用 `?branch=分支名` 指定图床分支；GitLab 还需 `projectId`   |
+| `hashMode`                                        | GitHub Pages 设为 `true`；History 路由需要托管平台配置 SPA 回退         |
+| `email`                                           | 收录通知邮箱，相关功能依赖对应通知服务                                  |
+| `address`                                         | 兼容原有自有服务器 API；静态部署保持空值                                |
+| `password`、`port`、`mailConfig`、`XFAPIPassword` | 原有自有服务器配置，不是静态站点自定义登录密码                          |
 
 例如，GitLab 仓库写法为 `https://gitlab.com/用户名/仓库?projectId=项目ID`，图床可写为 `https://gitlab.com/用户名/图片仓库?projectId=项目ID&branch=images`。图床仓库及指定分支需要提前创建，并为 Token 授予对应写权限。
 
@@ -98,7 +98,7 @@ Token 仅写入当前标签页的 `sessionStorage`。刷新保留登录，退出
 ### 部署前准备
 
 1. Fork 项目或把当前源码上传到自己的 Git 仓库，提交源码和 `pnpm-lock.yaml`，不要上传 `node_modules`、`dist`。
-2. 修改 `nav.config.yaml`：`gitRepoUrl` 填自己的仓库，`branch` 填实际部署分支（通常是 `main`），静态部署保持 `address: ''`。使用自己的图床时，同时配置 `imageRepoUrl` 并提前创建图床分支。
+2. 修改 `nav.config.yaml`：`gitRepoUrl` 填自己的仓库，`branch` 保持 `auto`，静态部署保持 `address: ''`。构建会识别当前部署分支，后台内容和密码保存均提交到该分支，支持任意合法 Git 分支名。使用自己的图床时，同时配置 `imageRepoUrl` 并提前创建图床分支。
 3. GitHub Pages 自动工作流会在构建时启用 Hash 路由，其他平台保留 YAML 的 `hashMode`（通常用 `false`）。本地手动构建 Pages 时设置 `hashMode: true`。提交修改，再按下面的平台步骤部署。
 
 ### 静态托管平台
@@ -108,23 +108,29 @@ Netlify、Vercel 和 Cloudflare Pages 都可以连接 Git 仓库，后续后台�
 | 平台                                             | 操作步骤                                                                                                                                                         |
 | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [Netlify](https://app.netlify.com/)              | 新建站点，选择从 Git 导入并授权自己的仓库；选择部署分支，保留根目录 `netlify.toml` 的构建设置；点击部署。                                                        |
-| [Vercel](https://vercel.com/new)                 | 导入自己的仓库；项目根目录保持仓库根目录，构建命令填 `pnpm run build`，输出目录填 `dist/browser`；确认 Production Branch 与 YAML 的 `branch` 一致后部署。        |
+| [Vercel](https://vercel.com/new)                 | 导入自己的仓库；项目根目录保持仓库根目录，构建命令填 `pnpm run build`，输出目录填 `dist/browser`；Production Branch 选择实际发布分支，YAML 保持 `branch: auto`。 |
 | [Cloudflare Pages](https://dash.cloudflare.com/) | 在 Workers & Pages 中创建 **Pages** 项目并连接 Git；选择仓库与生产分支，框架预设选“无”，构建命令填 `pnpm run build`，构建输出目录填 `dist/browser`；保存并部署。 |
 
 构建环境使用 Node.js **22.12+ 或 24+**；安装命令可设为 `pnpm install --frozen-lockfile`。Netlify 已在配置中指定 Node 22；Vercel 在项目设置选择 Node 版本；Cloudflare Pages 可添加环境变量 `NODE_VERSION=22.12.0`。部署成功后，先打开平台提供的默认域名确认首页正常，再添加自己的域名。
+
+**Cloudflare 部署任意分支**：保持 `branch: auto`，平台会自动注入 `CF_PAGES_BRANCH`，无需手动添加这个变量。在 Pages 的构建设置中选择实际生产分支，或在预览分支控制中允许需要的分支自动部署。后台页头的“提交分支”应与当前站点部署来源一致；例如 `release/v2.3` 站点会向 `release/v2.3` 保存。换分支后刷新并重新登录，原分支的密码凭证不能自动迁移，需要在新分支用 Token 登录后重新设置。
+
+`auto` 依次读取 Cloudflare、GitHub Actions、Netlify、Vercel、GitLab 的分支信息，最后使用本地 Git 分支。无法识别时会停止构建，不会猜测 `main`；源码 ZIP 或没有分支信息的环境可在 YAML 显式填写分支。
 
 ### GitHub Pages
 
 已内置 [自动发布工作流](.github/workflows/deploy-gh-pages.yml)，与 B 项目一样通过 GitHub Actions 部署：
 
-1. 将源码和工作流提交到自己的仓库，确认 `nav.config.yaml` 的 `gitRepoUrl` 是这个仓库、`branch` 是 `main`、`address` 为空。
+1. 将源码和工作流提交到自己的仓库，确认 `nav.config.yaml` 的 `gitRepoUrl` 是这个仓库、`branch` 保持 `auto`、`address` 为空。
 2. 打开仓库 **Settings → Pages**，将 **Build and deployment → Source** 设为 **GitHub Actions**。之前使用分支发布的站点，也切换为这个选项。
-3. 打开 **Actions**，如果 Fork 的工作流未启用，先点击启用；选择 **Deploy to GitHub Pages → Run workflow**，在 `main` 分支触发首次部署。
+3. 打开 **Actions**，如果 Fork 的工作流未启用，先点击启用；选择 **Deploy to GitHub Pages → Run workflow**，选择实际发布分支，触发首次部署。
 4. 等待工作流构建、部署均显示绿色对勾，访问 `https://用户名.github.io/仓库名/`；仓库名为 `用户名.github.io` 时，访问 `https://用户名.github.io/`。
 
-之后向 `main` 提交代码或在后台保存内容、密码，都会自动重新部署，无需手动上传产物或创建 `gh-pages` 分支。工作流使用相对资源路径并启用 Hash 路由，根站点和仓库子目录都能使用；后台地址为站点地址加 `#/system`。
+之后向发布分支提交代码或在后台保存内容、密码，都会自动重新部署，无需手动上传产物或创建 `gh-pages` 分支。工作流使用相对资源路径并启用 Hash 路由，根站点和仓库子目录都能使用；后台地址为站点地址加 `#/system`。
 
-A 仍使用显式仓库配置，不会像 B 的 `auto` 配置一样替换仓库地址。工作流会检查仓库和提交分支是否匹配；修改 `gitRepoUrl` 或 `branch` 后请提交配置。若部署其他分支，同时修改工作流的 `on.push.branches` 和 YAML `branch`。普通数据 / 密码提交无需另配部署 Token，工作流使用 GitHub 自带权限。
+**选择 Pages 自动发布分支**：未配置时使用仓库默认分支，仓库名和分支名都不固定。需要发布其他分支时，在 **Settings → Secrets and variables → Actions → Variables** 新建仓库变量 `NAV_PAGES_BRANCH`，值填该分支完整名称，YAML 仍保持 `branch: auto`，无需修改工作流。手动 Run workflow 可发布所选分支；后续自动发布跟随这个变量。GitHub Pages 同一仓库只有一个站点，所以其他分支提交会跳过发布，避免预览分支覆盖正式站点。
+
+仓库地址仍需显式填写，工作流会检查仓库和实际提交分支是否匹配。Cloudflare 的分支由 Pages 平台设置决定，不受 `NAV_PAGES_BRANCH` 影响。普通数据 / 密码提交无需另配部署 Token，工作流使用 GitHub 自带权限。
 
 自定义域名在 **Settings → Pages → Custom domain** 配置，并按 GitHub 提示设置 DNS。使用 Netlify、Vercel 或 Cloudflare Pages 时，可删除这个工作流，避免重复构建。
 
@@ -133,7 +139,7 @@ A 仍使用显式仓库配置，不会像 B 的 `auto` 配置一样替换仓库�
 部署成功后打开 `/system`，GitHub Pages 使用 `/#/system`，子目录站点保留仓库名前缀。首次用具有仓库写权限的 Token 登录，再到 **系统设置 → 登录密码管理** 设置密码。后台修改和密码设置都需要等待该分支重新部署成功后生效。
 
 - **首页能打开，刷新后台出现 404**：检查 History 路由的 SPA 回退；GitHub Pages 使用 Hash 路由。
-- **部署成功但看不到更新**：确认平台部署分支与 YAML `branch` 一致，再检查最新构建是否成功；手动发布需要重新构建上传。
+- **部署成功但看不到更新**：保持 YAML `branch: auto`，核对后台显示的“提交分支”是否为平台实际部署分支，并检查最新构建和分支自动部署设置；显式填写分支时，两者应一致。
 - **图片无法上传**：确认图床仓库、图床分支已经存在，且 Token 有相应写权限。
 
 ### 本地构建与发布目录
@@ -148,7 +154,7 @@ pnpm run build-gh-pages
 
 发布目录均为 **`dist/browser`**。构建会生成页面模板和 SEO 内容；有效登录凭证单独发布到 `data/auth.json`。空白 / 移除凭证会清理资源，明文或损坏的凭证会阻止构建。
 
-连接 Git 仓库时，部署分支应与 `nav.config.yaml` 的 `branch` 一致。密码保存只完成 Git 提交，必须等该分支部署成功后才生效；请求时间戳不能提前读取尚未发布的文件。
+连接 Git 仓库时，YAML 保持 `branch: auto`，后台会使用构建时识别的实际部署分支；只有显式填写分支时，才需要手动核对与发布来源一致。密码保存只完成 Git 提交，必须等该分支部署成功后才生效；请求时间戳不能提前读取尚未发布的文件。
 
 前端保留原有自有服务器 API 兼容入口，但当前目录没有服务器、Dockerfile 或 PM2 启动脚本。要使用 `address` 模式，需要另外提供兼容 API 服务；普通静态部署保持 `address` 为空。
 

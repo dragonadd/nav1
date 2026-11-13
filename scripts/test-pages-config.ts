@@ -12,6 +12,11 @@ const keys = [
   'GITHUB_REPOSITORY',
   'GITHUB_REF_NAME',
   'GITHUB_REF_TYPE',
+  'GITHUB_EVENT_NAME',
+  'CF_PAGES_BRANCH',
+  'BRANCH',
+  'VERCEL_GIT_COMMIT_REF',
+  'CI_COMMIT_BRANCH',
 ]
 const previousEnvironment = Object.fromEntries(
   keys.map((key) => [key, process.env[key]]),
@@ -45,6 +50,17 @@ try {
   assert.equal(getConfig().hashMode, true, 'Pages 自动部署必须启用 Hash 路由')
   assert.equal(getConfig().gitRepoUrl, config.gitRepoUrl)
   assert.equal(getConfig().imageRepoUrl, config.imageRepoUrl)
+  write({ branch: 'auto' })
+  for (const branch of ['preview-customer-42', 'release/v2.3', '部署-演示']) {
+    process.env['GITHUB_REF_NAME'] = branch
+    assert.equal(
+      getConfig().branch,
+      branch,
+      'Pages 自动配置必须跟随任意选定分支',
+    )
+  }
+  process.env['GITHUB_REF_NAME'] = 'main'
+  write()
   assert.equal(
     (yaml.load(fs.readFileSync('nav.config.yaml', 'utf8')) as any).hashMode,
     false,

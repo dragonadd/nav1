@@ -29,6 +29,8 @@ import fs from 'node:fs'
 import yaml from 'js-yaml'
 import sharp from 'sharp'
 import axios from 'axios'
+import { execFileSync } from 'node:child_process'
+import { resolveDeploymentBranch } from './deployment-branch'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -81,11 +83,28 @@ export const getConfig = () => {
     '',
   )
 
+  const branchSetting = String(config['branch'] ?? 'auto')
+  let localBranch = ''
+  if (branchSetting === 'auto') {
+    try {
+      localBranch = execFileSync('git', ['branch', '--show-current'], {
+        encoding: 'utf8',
+        windowsHide: true,
+        stdio: ['ignore', 'pipe', 'pipe'],
+      }).replace(/\r?\n$/, '')
+    } catch {}
+  }
+  const branch = resolveDeploymentBranch(
+    branchSetting,
+    process.env,
+    localBranch,
+  )
+
   const isGitHubPages = process.env['NAV_GITHUB_PAGES'] === 'true'
   if (isGitHubPages) {
     const repository = process.env['GITHUB_REPOSITORY']
-    const branch = process.env['GITHUB_REF_NAME']
-    if (!repository || !branch)
+    const sourceBranch = process.env['GITHUB_REF_NAME']
+    if (!repository || !sourceBranch)
       throw new Error('缺少 GitHub Pages 的仓库或分支信息')
     if (
       gitRepoUrl.toLowerCase() !==
@@ -94,10 +113,7 @@ export const getConfig = () => {
       throw new Error(
         '请将 nav.config.yaml 的 gitRepoUrl 设置为当前 GitHub 仓库地址',
       )
-    if (
-      process.env['GITHUB_REF_TYPE'] !== 'branch' ||
-      config['branch'] !== branch
-    )
+    if (process.env['GITHUB_REF_TYPE'] !== 'branch' || branch !== sourceBranch)
       throw new Error('请让 nav.config.yaml 的 branch 与当前部署分支一致')
     if (config['address'])
       throw new Error(
@@ -114,7 +130,7 @@ export const getConfig = () => {
     zorroDark: `//gcore.jsdelivr.net/npm/ng-zorro-antd@${zorroVersion}/ng-zorro-antd.dark.min.css`,
     gitRepoUrl,
     imageRepoUrl: config['imageRepoUrl'],
-    branch: config['branch'],
+    branch,
     hashMode: isGitHubPages ? true : config['hashMode'],
     address: config['address'],
     email: config['email'],
