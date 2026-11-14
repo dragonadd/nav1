@@ -1,4 +1,5 @@
-import { Routes } from '@angular/router'
+import { inject } from '@angular/core'
+import { Router, Routes } from '@angular/router'
 import LightComponent from 'src/view/light/index.component'
 import SuperComponent from 'src/view/super/index.component'
 import SimComponent from 'src/view/sim/index.component'
@@ -111,16 +112,12 @@ export const routes: Routes = [
 // 自有部署异步
 if (!isSelfDevelop) {
   const defaultTheme = getDefaultTheme().toLowerCase()
-  const hasDefault = routes.find((item) => item.path === defaultTheme)
-  if (hasDefault) {
-    routes.push({
-      ...hasDefault,
-      path: '**',
-    })
-  } else {
-    routes.push({
-      path: '**',
-      redirectTo: '/' + defaultTheme,
-    })
-  }
+  routes.push({
+    path: '**',
+    redirectTo: ({ queryParams, fragment }) =>
+      inject(Router).createUrlTree(['/' + defaultTheme], {
+        queryParams,
+        fragment: fragment ?? undefined,
+      }),
+  })
 }

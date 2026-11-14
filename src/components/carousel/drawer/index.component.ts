@@ -59,12 +59,13 @@ export class CarouselDrawerComponent {
   onUploadImage(data: any, idx: number) {
     const imgGroup = this.imgs.at(idx)
     imgGroup.patchValue({
-      img: data.cdn,
+      src: data.cdn,
     })
   }
 
   open(data: any, idx: number) {
     this.index = idx
+    this.imgs.clear()
     this.validateForm.get('width')?.setValue(data['width'])
     this.validateForm.get('fit')?.setValue(data['fit'])
     if (data['imgs']) {

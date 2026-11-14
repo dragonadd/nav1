@@ -49,13 +49,6 @@ export default class SideComponent {
     this.breakpoint.addEventListener('change', this.onBreakpoint)
   }
 
-  get websiteCount() {
-    return this.commonService.currentList.reduce(
-      (total, section) => total + section.nav.length,
-      0,
-    )
-  }
-
   get bannerImage() {
     const image = this.commonService.settings().sideBanner
     return image ? `url(${JSON.stringify(image)})` : null

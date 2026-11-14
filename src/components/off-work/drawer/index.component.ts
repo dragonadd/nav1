@@ -51,7 +51,11 @@ export class OffWorkDrawerComponent {
   open(data: any, idx: number) {
     this.index = idx
     for (const k in data) {
-      this.validateForm.get(k)?.setValue(data[k])
+      this.validateForm
+        .get(k)
+        ?.setValue(
+          k === 'startDate' || k === 'date' ? new Date(data[k]) : data[k],
+        )
     }
     this.visible = true
   }
@@ -64,8 +68,20 @@ export class OffWorkDrawerComponent {
     const values = this.validateForm.value
     const startDate = new Date(values.startDate).getTime()
     const date = new Date(values.date).getTime()
-    if (startDate >= date) {
-      return this.message.error('休息时间需要比工作时间大')
+    const seconds = (value: number) => {
+      const time = new Date(value)
+      return time.getHours() * 3600 + time.getMinutes() * 60 + time.getSeconds()
+    }
+    if (
+      !Number.isFinite(startDate) ||
+      !Number.isFinite(date) ||
+      values.startDate == null ||
+      values.date == null ||
+      seconds(startDate) >= seconds(date)
+    ) {
+      return this.message.error(
+        '请填写有效的上班和下班时间，下班时间须晚于上班时间',
+      )
     }
     this.ok.emit({
       ...values,

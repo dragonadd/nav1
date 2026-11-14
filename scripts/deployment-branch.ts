@@ -1,4 +1,4 @@
-// 参考 NavBlog：后台提交分支在构建时确定，不在浏览器里猜测。
+// 在构建时确定后台提交分支。
 export function resolveDeploymentBranch(
   value: string,
   env: Record<string, string | undefined>,

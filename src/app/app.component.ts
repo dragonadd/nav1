@@ -152,13 +152,21 @@ export class AppComponent {
             this.router.resetConfig([
               ...currentRoutes,
               {
-                ...hasDefault,
                 path: '**',
+                redirectTo: ({ queryParams, fragment }) =>
+                  this.router.createUrlTree(['/' + defaultTheme], {
+                    queryParams,
+                    fragment: fragment ?? undefined,
+                  }),
               },
             ])
           }
           if (isHome && !href.includes('/system')) {
-            this.router.navigate([defaultTheme])
+            this.router.navigate([defaultTheme], {
+              queryParamsHandling: 'preserve',
+              preserveFragment: true,
+              replaceUrl: true,
+            })
           }
           this.updateDocumentTitle()
           this.fetchIng = false
@@ -236,12 +244,11 @@ export class AppComponent {
       }
 
       const url = (this.router.url.split('?')[0] || '').toLowerCase()
-      const { id, q } = queryString()
-      const queryParams = { id, q }
+      const queryParams = queryString()
       const path = '/' + String(appTheme).toLowerCase()
 
       if (!url.includes(path)) {
-        this.router.navigate([path], { queryParams })
+        this.router.navigate([path], { queryParams, replaceUrl: true })
       }
     }
   }

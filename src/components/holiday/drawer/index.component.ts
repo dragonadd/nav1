@@ -63,6 +63,7 @@ export class HolidayDrawerComponent {
 
   open(data: any, idx: number) {
     this.index = idx
+    this.items.clear()
     if (data['items']) {
       data['items'].forEach((item: any) => {
         ;(this.validateForm.get('items') as FormArray).push(
@@ -70,7 +71,7 @@ export class HolidayDrawerComponent {
             url: item.url || '', // 预留
             day: String(item.day),
             title: item.title,
-            date: item.date,
+            date: new Date(item.date),
           }),
         )
       })

@@ -399,3 +399,19 @@ test('初始化保留关闭开关及明确留空的接口，重复初始化不�
   assert.equal(defaults.hitokotoSources, 'hitokoto')
   assert.equal(defaults.hitokotoTitle, '每日一言')
 })
+
+test('每日文字默认居中，保留四种对齐方式并拒绝未知值', () => {
+  const defaults = settings()
+  initializeDailyTextSettings(defaults)
+  assert.equal(defaults.hitokotoAlign, 'center')
+  for (const hitokotoAlign of ['left', 'center', 'right', 'justify'] as const) {
+    const value = settings({ hitokotoAlign })
+    initializeDailyTextSettings(value)
+    assert.equal(value.hitokotoAlign, hitokotoAlign)
+    initializeDailyTextSettings(value)
+    assert.equal(value.hitokotoAlign, hitokotoAlign)
+  }
+  const invalid = { hitokotoAlign: 'inherit' } as unknown as BlogSettings
+  initializeDailyTextSettings(invalid)
+  assert.equal(invalid.hitokotoAlign, 'center')
+})

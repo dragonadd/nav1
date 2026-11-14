@@ -13,9 +13,9 @@ import { CommonModule } from '@angular/common'
 import { $t } from 'src/locale'
 import { NzMessageService } from 'ng-zorro-antd/message'
 import { NzNotificationService } from 'ng-zorro-antd/notification'
-import { SETTING_PATH } from 'src/constants'
+import { SETTING_PATH, COMPONENT_PATH } from 'src/constants'
 import { CODE_SYMBOL } from 'src/constants/symbol'
-import { updateFileContent, spiderWebs } from 'src/api'
+import { updateFileContent, spiderWebs, getWebInfo } from 'src/api'
 import { settings, component } from 'src/store'
 import { isSelfDevelop, compilerTemplate } from 'src/utils/utils'
 import { componentTitleMap } from '../component/types'
@@ -32,11 +32,22 @@ import { NzTabsModule } from 'ng-zorro-antd/tabs'
 import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm'
 import { NzPopoverModule } from 'ng-zorro-antd/popover'
 import { NzSelectModule } from 'ng-zorro-antd/select'
+import { NzDatePickerModule } from 'ng-zorro-antd/date-picker'
+import SystemComponentComponent from '../component/index.component'
+import {
+  initializeWebInfoSettings,
+  validateWebInfoSettings,
+} from 'src/utils/web-info'
 import { UploadImageComponent } from 'src/components/upload-image/index.component'
 import { UploadFileComponent } from 'src/components/upload-file/index.component'
 import { CardComponent } from 'src/components/card/index.component'
 import { ActionType } from 'src/types'
-import type { IComponentItemProps, IWebProps, ThemeType } from 'src/types'
+import type {
+  IComponentItemProps,
+  IComponentProps,
+  IWebProps,
+  ThemeType,
+} from 'src/types'
 import event from 'src/utils/mitt'
 import footTemplate from 'src/components/footer/template'
 import { replaceJsdelivrCDN } from 'src/utils/pureUtils'
@@ -46,6 +57,7 @@ import {
   parseDailySources,
   sourceText,
   dailyTextLimit,
+  dailyTextAlign,
 } from 'src/utils/daily-text'
 
 // 额外添加的字段，但不添加到配置中
@@ -61,6 +73,8 @@ const extraForm: Record<string, any> = {
     ReactiveFormsModule,
     CommonModule,
     NzSelectModule,
+    NzDatePickerModule,
+    SystemComponentComponent,
     NzPopoverModule,
     NzTabsModule,
     SafeHtmlPipe,
@@ -92,6 +106,10 @@ export default class SystemSettingComponent {
   tabActive = 0
   sectionActive = 0
   componentOptions: any[] = []
+  widgetDraft: IComponentProps | null = null
+  webInfoTestUrl = ''
+  webInfoTestResult = ''
+  testingWebInfo = false
   actionOptions = [
     {
       label: $t('_add'),
@@ -130,6 +148,7 @@ export default class SystemSettingComponent {
     private message: NzMessageService,
   ) {
     initializeDailyTextSettings(this.settings)
+    initializeWebInfoSettings(this.settings)
     const themeMap: Record<ThemeType, number> = {
       Light: 0,
       Super: 1,
@@ -140,6 +159,7 @@ export default class SystemSettingComponent {
     }
     this.tabActive = themeMap[this.settings.theme] || 0
 
+    extraForm['componentOptions'] = []
     this.componentOptions = component().components.map((item) => {
       const data = this.settings.components.find(
         (c) => item.type === c.type && item.id === c.id,
@@ -162,6 +182,7 @@ export default class SystemSettingComponent {
     for (const k in group) {
       groupPayload[k] = [group[k]]
     }
+    groupPayload.runtime = [new Date(this.settings.runtime)]
     this.validateForm = this.fb.group(groupPayload)
 
     event.on('GITHUB_USER_INFO', (data: any) => {
@@ -192,6 +213,24 @@ export default class SystemSettingComponent {
       .map((line: string) => line.trim())
       .filter(Boolean)
     if (!lines.includes(name)) field.setValue([...lines, name].join('\n'))
+  }
+
+  async testWebInfo() {
+    if (this.testingWebInfo) return
+    this.testingWebInfo = true
+    this.webInfoTestResult = ''
+    try {
+      const url = new URL(this.webInfoTestUrl.trim())
+      if (!['http:', 'https:'].includes(url.protocol))
+        throw new Error($t('_webInfoInvalidUrl'))
+      const result = await getWebInfo(url.href, this.validateForm.value)
+      this.webInfoTestResult = JSON.stringify(result, null, 2)
+    } catch (error) {
+      this.webInfoTestResult =
+        error instanceof Error ? error.message : $t('_error')
+    } finally {
+      this.testingWebInfo = false
+    }
   }
 
   onLogoChange(data: any, key: string) {
@@ -293,6 +332,18 @@ export default class SystemSettingComponent {
       daily.hitokotoTitle =
         (daily.hitokotoTitle || '').trim() || $t('_dailyTitle')
       daily.hitokotoMaxLength = dailyTextLimit(daily.hitokotoMaxLength)
+      daily.hitokotoAlign = dailyTextAlign(daily.hitokotoAlign)
+      daily.runtime = new Date(daily.runtime).getTime()
+      if (!Number.isFinite(daily.runtime))
+        throw new Error($t('_widgetInvalidStart'))
+      daily.webInfoApi = (daily.webInfoApi || '').trim()
+      for (const key of [
+        'webInfoTitlePath',
+        'webInfoIconPath',
+        'webInfoDescriptionPath',
+      ])
+        daily[key] = (daily[key] || '').trim()
+      validateWebInfoSettings(daily)
       if (daily.hitokotoEnable !== false) {
         const sources = parseDailySources(daily.hitokotoSources)
         if (!sources.length && !daily.hitokotoCustomText)
@@ -334,11 +385,27 @@ export default class SystemSettingComponent {
       }
 
       this.submitting = true
-      updateFileContent({
-        message: 'update settings',
-        content: JSON.stringify(values),
-        path: SETTING_PATH,
-      })
+      const widgetConfig = this.widgetDraft
+      let widgetsSaved = false
+      const saveWidgets = widgetConfig
+        ? updateFileContent({
+            message: 'update component',
+            content: JSON.stringify(widgetConfig),
+            path: COMPONENT_PATH,
+          }).then(() => {
+            component.set(widgetConfig)
+            widgetsSaved = true
+            if (this.widgetDraft === widgetConfig) this.widgetDraft = null
+          })
+        : Promise.resolve()
+      saveWidgets
+        .then(() =>
+          updateFileContent({
+            message: 'update settings',
+            content: JSON.stringify(values),
+            path: SETTING_PATH,
+          }),
+        )
         .finally(() => {
           this.submitting = false
         })
@@ -349,7 +416,10 @@ export default class SystemSettingComponent {
           this.message.success($t('_syncSuccessTip'))
           resolve(null)
         })
-        .catch(reject)
+        .catch((error) => {
+          if (widgetsSaved) this.message.error($t('_widgetPartialSave'))
+          reject(error)
+        })
     })
   }
 }

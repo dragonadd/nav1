@@ -47,13 +47,17 @@
 }
 
 .super-xjh {
-  --stickyTop: 20px;
+  --stickyTop: 76px;
   background-color: #f2f3f5;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 
   .sheader {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    min-height: 56px;
     display: flex;
     align-items: center;
     background-color: #fff;
@@ -117,16 +121,17 @@
 
   .main-box {
     width: var(--width);
-    margin: 10px auto 40px;
+    margin: 10px auto 16px;
     display: flex;
     flex: 1;
     column-gap: 20px;
     .left {
       position: sticky;
       top: var(--stickyTop);
+      align-self: flex-start;
       width: var(--leftWidth);
       min-width: var(--leftWidth);
-      max-height: calc(100vh - 110px);
+      max-height: calc(100dvh - var(--stickyTop) - 16px);
       text-align: left;
       background-color: #fff;
       padding: 8px;

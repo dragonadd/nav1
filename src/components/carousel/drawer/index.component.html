@@ -8,15 +8,15 @@
 >
   <form nz-form [formGroup]="validateForm" *nzDrawerContent>
     <nz-form-item>
-      <nz-form-label [nzSpan]="4">Width</nz-form-label>
-      <nz-form-control [nzSpan]="20">
+      <nz-form-label [nzSpan]="8">{{ $t('_widgetWidth') }}</nz-form-label>
+      <nz-form-control [nzSpan]="16">
         <nz-slider formControlName="width" [nzMax]="1000"></nz-slider>
       </nz-form-control>
     </nz-form-item>
 
     <nz-form-item>
-      <nz-form-label [nzSpan]="4">Fit</nz-form-label>
-      <nz-form-control [nzSpan]="20"
+      <nz-form-label [nzSpan]="8">{{ $t('_widgetFit') }}</nz-form-label>
+      <nz-form-control [nzSpan]="16"
         ><nz-select formControlName="fit">
           <nz-option nzValue="contain" nzLabel="contain"></nz-option>
           <nz-option nzValue="cover" nzLabel="cover"></nz-option>
@@ -32,8 +32,8 @@
       >
         <ng-container [formGroupName]="idx">
           <nz-form-item>
-            <nz-form-label [nzSpan]="4">{{ $t('_image') }}</nz-form-label>
-            <nz-form-control [nzSpan]="20">
+            <nz-form-label [nzSpan]="8">{{ $t('_image') }}</nz-form-label>
+            <nz-form-control [nzSpan]="16">
               <nz-input-group [nzSuffix]="suffixIconSearch">
                 <input formControlName="src" nz-input />
               </nz-input-group>
@@ -47,8 +47,8 @@
           </nz-form-item>
 
           <nz-form-item>
-            <nz-form-label [nzSpan]="4">URL</nz-form-label>
-            <nz-form-control [nzSpan]="20">
+            <nz-form-label [nzSpan]="8">{{ $t('_jumpAddr') }}</nz-form-label>
+            <nz-form-control [nzSpan]="16">
               <input nz-input formControlName="url" />
             </nz-form-control>
           </nz-form-item>

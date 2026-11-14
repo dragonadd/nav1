@@ -7,12 +7,18 @@ const zhCN: Record<string, any> = {
   _settingsDaily: '每日文字',
   _dailyTitle: '每日一言',
   _dailySettingsDescription:
-    '在 Side 横幅下显示每日文字；接口按天缓存，自定义文字可单独使用。',
+    '在所有主题中显示每日文字；接口按天缓存，自定义文字可单独使用。',
   _dailyEnable: '启用每日文字',
   _dailyShowTitle: '显示卡片标题',
   _dailyCardTitle: '卡片标题',
   _dailyShowFrom: '显示作者与出处',
   _dailyLimit: '每个来源最多显示字数',
+  _dailyAlign: '文字对齐方式',
+  _dailyAlignLeft: '左对齐',
+  _dailyAlignCenter: '居中',
+  _dailyAlignRight: '右对齐',
+  _dailyAlignJustify: '两端对齐',
+  _dailyAlignHelp: '只调整文字对齐，各主题中每日文字的位置保持不变。',
   _dailySources: '文字来源（每行一个，最多 5 个）',
   _dailySourcesHelp:
     '填写内置名或接口网址，如“我的句子 | https://example.com/quote | data.content”。支持 JSON、数组和纯文本；末尾加“| 正文”可隐藏出处。接口须支持跨域，HTTPS 网站请使用 HTTPS 接口。',
@@ -33,6 +39,58 @@ const zhCN: Record<string, any> = {
   _settingsBasicDescription: '设置站点标识、搜索引擎描述和联系信息。',
   _settingsDisplay: '外观与交互',
   _settingsDisplayDescription: '调整搜索入口、快捷工具和页面显示。',
+  _widgetSettings: '小组件及参数',
+  _widgetSettingsHelp:
+    '勾选要展示的小组件，展开说明并修改参数。编辑窗口提交后，点击页面底部“保存”发布组件与设置。Light、Super、Sim、Side 显示组件组；App、Shortcut 不显示此组件组。',
+  _widgetVisibility: '显示的小组件',
+  _widgetEnabled: '已勾选显示',
+  _widgetHidden: '未勾选',
+  _widgetEditParameters: '修改参数',
+  _widgetScale: '小组件缩放',
+  _widgetRuntimeStart: '站点起始时间',
+  _widgetRuntimeStartHelp:
+    '“已稳定运行”从这个时间开始计算；不影响日历、下班和倒数。',
+  _widgetInvalidStart: '请填写有效的站点起始时间。',
+  _widgetPartialSave: '小组件参数已保存，站点设置保存失败，请重试保存设置。',
+  _widgetImageUrl: '图片地址',
+  _widgetTargetDate: '目标日期',
+  _widgetWidth: '宽度（像素）',
+  _widgetFit: '图片适配方式',
+  _widgetNewsSources: '新闻来源',
+  _widgetNewsCount: '每个来源条数',
+  _widgetCalendarHelp:
+    '显示访客本地的年月日、星期和一年中的第几天。可修改顶部颜色和背景颜色，日期自动读取访客设备时间。',
+  _widgetOffWorkHelp:
+    '每天比较访客本地时间与上班、下班时间；在工作时段显示距下班的剩余时间，其余时间显示休息标题。默认 09:00–18:00，不自动识别周末、节假日或跨夜班。可修改两个时间及工作、休息标题。',
+  _widgetRuntimeHelp:
+    '从站点起始时间算起，不足一年显示天数，满一年显示整年数。起始时间在上方设置，编辑窗口修改标题。',
+  _widgetImageHelp:
+    '指定图片地址的卡片，不会随机抓取图片。可更换图片、底部文字及点击后的跳转地址；跳转地址留空则不跳转。',
+  _widgetCountdownHelp:
+    '显示距离指定目标日期的整天数；过去日期显示 0，不会自动把“春节”等文字识别成每年的日期。可修改标题、目标日期、背景图片、背景颜色及文字颜色。',
+  _widgetHtmlHelp:
+    '显示自定义 HTML，可修改代码、卡片宽度和背景颜色。只填写自己信任的内容。',
+  _widgetHolidayHelp:
+    '显示尚未结束的假期，最多展示 4 项。可设置名称、开始日期和持续天数；可从接口获取假期，也可手动添加。过去的假期不显示。',
+  _widgetNewsHelp:
+    '从选定平台获取热门新闻或榜单，在浏览器中缓存 1 小时。可修改来源、条数和背景颜色，获取内容需要联网。',
+  _widgetCarouselHelp:
+    '轮播指定的图片列表，可修改每张图片与点击链接、宽度和显示方式：contain 完整显示、cover 裁剪铺满、fill 拉伸。',
+  _webInfoSettings: '网站信息自动填写',
+  _webInfoSettingsHelp:
+    '输入网站链接后补充空白的名称、图标和描述。自定义接口只接收网站链接，不附带仓库 Token；“输入链接允许查找”控制此功能的开关。',
+  _webInfoApi: '自定义接口地址',
+  _webInfoApiHelp:
+    '留空使用默认接口。GET 通过 url 参数传递网站链接，或用 {url} 指定位置；POST 发送 {"url":"网站链接"}。接口须返回 JSON、允许跨域；HTTPS 站点使用 HTTPS 接口。',
+  _webInfoMethod: '请求方式',
+  _webInfoTitlePath: '名称字段路径',
+  _webInfoIconPath: '图标字段路径',
+  _webInfoDescriptionPath: '描述字段路径',
+  _webInfoMappingHelp:
+    '例如返回 {"data":{"name":"示例","icon":"/favicon.ico","summary":"描述"}}，分别填写 data.name、data.icon、data.summary。留空跳过该字段；相对图标地址按目标网站解析。',
+  _webInfoTestUrl: '测试网站链接',
+  _webInfoTest: '测试当前配置',
+  _webInfoInvalidUrl: '请输入 HTTP(S) 网站链接。',
   _settingsThemes: '主题设置',
   _settingsThemesDescription: '选择默认主题，再调整对应的横幅、卡片和页脚。',
   _settingsAdvanced: '高级设置',
@@ -72,13 +130,10 @@ const zhCN: Record<string, any> = {
   _adminCollectDescription: '查看用户提交的链接并进行审核。',
   _adminSettingsDescription: '调整站点外观、展示内容和主题配置。',
   _adminPasswordDescription: '独立管理后台登录密码，支持设置、修改和移除。',
-  _sideThemeDescription:
-    '索引主题：分类侧栏、横幅搜索和网格卡片，使用现有导航数据。',
-  _sideBannerHint:
-    '可填写图片网址；留空使用渐变背景。标题、描述和页脚留空时使用全局设置。',
+  _sideThemeDescription: 'Side 主题：分类侧栏、横幅搜索和网格卡片。',
+  _sideBannerHint: '可填写图片网址；留空使用渐变背景。页脚留空时使用全局设置。',
   _sideNavigation: '分类导航',
   _sideResults: '搜索结果',
-  _sideWebsites: '个网站',
   _sideSearch: '站内搜索',
   _sideSearchPlaceholder: '搜索收录的网站…',
   _sideEmptySection: '这个分类暂未收录网站。',
@@ -375,8 +430,8 @@ const zhCN: Record<string, any> = {
   _timeColor: '时间颜色',
   _date: '日期',
   _time: '时间',
-  _workHours: '工作时间',
-  _breakTime: '休息时间',
+  _workHours: '上班时间',
+  _breakTime: '下班时间',
   _holiday: '节假日',
   _year: '年',
   _day: '天',

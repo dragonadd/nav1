@@ -3,32 +3,32 @@
   width: 100%;
   max-width: 720px;
   margin-top: 18px;
+  flex-shrink: 0;
+  color: #334155;
+}
+:host(.inset) {
+  width: calc(100% - 24px);
+  margin: 16px auto;
+}
+:host:empty {
+  display: none;
 }
 .daily-text {
-  padding: 16px 20px;
-  border: 1px solid #ffffff70;
-  border-radius: 12px;
-  color: #334155;
-  background: #fffffff2;
-  box-shadow: 0 8px 28px #0f172a12;
-  text-align: left;
   h2 {
     margin: 0 0 10px;
-    color: #2563eb;
+    color: inherit;
     font-size: 13px;
     font-weight: 600;
   }
   figure {
     margin: 0;
     padding: 10px 0;
-    border-bottom: 1px dashed #cbd5e1;
   }
   figure:first-child {
     padding-top: 0;
   }
   figure:last-child {
     padding-bottom: 0;
-    border: 0;
   }
   blockquote {
     margin: 0;
@@ -39,31 +39,27 @@
   }
   figcaption {
     margin-top: 7px;
-    color: #64748b;
+    opacity: 0.85;
     font-size: 11px;
-    text-align: right;
   }
   p {
     margin: 0;
-    color: #64748b;
+    opacity: 0.85;
     font-size: 13px;
   }
 }
 .daily-failure {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
   margin-top: 8px;
-  color: #64748b;
+  opacity: 0.85;
   font-size: 12px;
 }
 .daily-retry {
-  padding: 4px 9px;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  color: #2563eb;
+  margin-left: 10px;
+  padding: 0;
+  border: 0;
+  color: inherit;
   background: transparent;
+  text-decoration: underline;
   cursor: pointer;
   &:disabled {
     cursor: wait;
@@ -74,28 +70,10 @@
     outline-offset: 2px;
   }
 }
-:host-context(.dark) .daily-text {
+:host-context(.dark) {
   color: #e2e8f0;
-  background: #172235ed;
-  border-color: #475569;
-  h2 {
-    color: #93c5fd;
-  }
-  figcaption,
-  p,
-  .daily-failure {
-    color: #a1adbe;
-  }
-  figure {
-    border-color: #475569;
-  }
-  .daily-retry {
-    color: #93c5fd;
-    border-color: #64748b;
-  }
 }
-@media (max-width: 768px) {
-  .daily-text {
-    padding: 14px 16px;
-  }
+:host(.on-image) {
+  color: #fff;
+  text-shadow: 0 1px 4px #0f172acc;
 }

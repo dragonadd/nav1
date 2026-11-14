@@ -1,4 +1,3 @@
-<!-- 只保留容器，不写死样式，完全复刻light主题 -->
 <div id="random-light-bg" class="dark-bg"></div>
 
 <div class="sim">
@@ -139,17 +138,17 @@
       </ng-template>
     </aside>
   </div>
+  <app-daily-text class="inset on-image" />
+  <app-footer
+    className="sim-footer"
+    [content]="commonService.settings().simFooterHTML"
+  />
 </div>
 
 <app-sidebar class="md:hidden" />
-<app-footer
-  className="sim-footer"
-  [content]="commonService.settings().simFooterHTML"
-/>
 <app-fixbar
   (onCollapse)="commonService.onCollapseAll()"
   [collapsed]="commonService.collapsed"
 />
 
-<!-- 保留sim-bg，但给它加透明背景，不盖住渐变 -->
-<div class="sim-bg dark-bg" style="background: transparent !important;"></div>
+<div class="sim-bg dark-bg" style="background: transparent !important"></div>

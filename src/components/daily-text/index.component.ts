@@ -3,6 +3,7 @@ import { settings } from 'src/store'
 import { DailyTextService, type DailyPart } from 'src/services/daily-text'
 import {
   dailyTextLimit,
+  dailyTextAlign,
   limitDailyText,
   renderDailyTemplate,
 } from 'src/utils/daily-text'
@@ -18,6 +19,7 @@ export class DailyTextComponent {
   private readonly dailyText = inject(DailyTextService)
   readonly $t = $t
   readonly enabled = computed(() => settings().hitokotoEnable !== false)
+  readonly alignment = computed(() => dailyTextAlign(settings().hitokotoAlign))
   readonly showTitle = computed(() => settings().hitokotoShowTitle !== false)
   readonly title = computed(
     () => settings().hitokotoTitle?.trim() || $t('_dailyTitle'),

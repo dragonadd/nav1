@@ -76,44 +76,18 @@
     </nav>
   </aside>
 
-  <main class="side-main">
+  <main class="side-main" [attr.aria-label]="commonService.settings().title">
     <section class="side-hero" [style.background-image]="bannerImage">
-      <h1>
-        {{
-          commonService.settings().sideTitle || commonService.settings().title
-        }}
-      </h1>
       <app-search
         *ngIf="commonService.settings().openSearch"
         [showLogo]="false"
         [siteSearchFallback]="true"
       />
-      <app-daily-text />
+      <app-daily-text class="on-image" />
     </section>
 
     <div class="side-content">
       <component-group *ngIf="commonService.settings().components.length" />
-      <div class="content-heading">
-        <div>
-          <span class="section-caption">{{
-            commonService.searchKeyword
-              ? $t('_sideResults')
-              : $t('_sideNavigation')
-          }}</span>
-          <h2>
-            {{
-              commonService.searchKeyword ||
-                commonService.navs()[commonService.oneIndex]?.nav?.[
-                  commonService.twoIndex
-                ]?.title
-            }}
-          </h2>
-        </div>
-        <span class="count-badge" aria-live="polite"
-          >{{ websiteCount }} {{ $t('_sideWebsites') }}</span
-        >
-      </div>
-
       <div *ngIf="commonService.currentList.length; else noData">
         <section
           class="nav-wrapper"

@@ -2,7 +2,13 @@
 // Copyright @ 2018-present xiejiahe. All rights reserved.
 // See https://github.com/xjh22222228/nav
 
-import { Component, ViewChild } from '@angular/core'
+import {
+  Component,
+  ViewChild,
+  Input,
+  Output,
+  EventEmitter,
+} from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
 import { NgSwitch, NgSwitchCase } from '@angular/common'
@@ -22,7 +28,9 @@ import { CountdownDrawerComponent } from 'src/components/countdown/drawer/index.
 import { HTMLDrawerComponent } from 'src/components/html/drawer/index.component'
 import { HolidayDrawerComponent } from 'src/components/holiday/drawer/index.component'
 import { NewsDrawerComponent } from 'src/components/news/drawer/index.component'
-import { componentTitleMap } from './types'
+import { componentTitleMap, componentHelpMap } from './types'
+import { newsTypeMap } from 'src/components/news/types'
+import dayjs from 'dayjs'
 import { NzButtonModule } from 'ng-zorro-antd/button'
 import { NzSliderModule } from 'ng-zorro-antd/slider'
 import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm'
@@ -73,6 +81,9 @@ import event from 'src/utils/mitt'
   styleUrls: ['./index.component.scss'],
 })
 export default class SystemComponentComponent {
+  @Input() embedded = false
+  @Input() enabledIds: number[] = []
+  @Output() configChange = new EventEmitter<IComponentProps>()
   @ViewChild('calendar') calendarChild!: CalendarDrawerComponent
   @ViewChild('runtime') runtimeChild!: RuntimeDrawerComponent
   @ViewChild('offwork') offworkChild!: OffWorkDrawerComponent
@@ -80,13 +91,14 @@ export default class SystemComponentComponent {
   @ViewChild('countdown') countdownChild!: CountdownDrawerComponent
   @ViewChild('html') htmlChild!: HTMLDrawerComponent
   @ViewChild('holiday') holidayChild!: HolidayDrawerComponent
-  @ViewChild('news') newsChild!: HolidayDrawerComponent
+  @ViewChild('news') newsChild!: NewsDrawerComponent
   @ViewChild('carousel') carouselChild!: CarouselDrawerComponent
 
   readonly $t = $t
   readonly componentTitleMap = componentTitleMap
+  readonly componentHelpMap = componentHelpMap
   readonly ComponentType = ComponentType
-  components = component().components
+  components = structuredClone(component().components)
   compoentZoom = component().zoom
   submitting: boolean = false
 
@@ -97,6 +109,76 @@ export default class SystemComponentComponent {
 
   ngOnInit() {}
 
+  private changed() {
+    this.configChange.emit(
+      structuredClone({ zoom: this.compoentZoom, components: this.components }),
+    )
+  }
+
+  parameterRows(
+    item: IComponentItemProps,
+  ): { label: string; value: unknown }[] {
+    const rows: Record<number, [string, unknown][]> = {
+      [ComponentType.Calendar]: [
+        ['_topColor', item.topColor],
+        ['_bgColor', item.bgColor],
+      ],
+      [ComponentType.OffWork]: [
+        ['_workHours', dayjs(item.startDate).format('HH:mm')],
+        ['_breakTime', dayjs(item.date).format('HH:mm')],
+        ['_workTitle', item.workTitle],
+        ['_restTitle', item.restTitle],
+      ],
+      [ComponentType.Runtime]: [['_runtimeTitle', item.title]],
+      [ComponentType.Image]: [
+        ['_widgetImageUrl', item.url],
+        ['_text', item.text],
+        ['_jumpAddr', item.go],
+      ],
+      [ComponentType.Countdown]: [
+        ['_title', item.title],
+        ['_widgetTargetDate', item.date],
+        ['_widgetImageUrl', item.url],
+      ],
+      [ComponentType.HTML]: [
+        ['_widgetWidth', item.width],
+        ['_bgColor', item.bgColor],
+        ['HTML', item.html],
+      ],
+      [ComponentType.Holiday]: [
+        [
+          '_holiday',
+          (item['items'] || [])
+            .map(
+              (entry: any) =>
+                `${entry.title} · ${entry.date} · ${entry.day || 0} ${$t('_day')}`,
+            )
+            .join('\n'),
+        ],
+      ],
+      [ComponentType.News]: [
+        [
+          '_widgetNewsSources',
+          (item.types || []).map((type) => newsTypeMap[type]).join('、'),
+        ],
+        ['_widgetNewsCount', item.count],
+        ['_bgColor', item.bgColor],
+      ],
+      [ComponentType.Carousel]: [
+        ['_widgetWidth', item.width],
+        ['_widgetFit', item.fit],
+        [
+          '_widgetImageUrl',
+          (item.imgs || []).map((image) => image.src).join('\n'),
+        ],
+      ],
+    }
+    return (rows[item.type] || []).map(([label, value]) => ({
+      label: $t(label),
+      value: value === '' || value == null ? '—' : value,
+    }))
+  }
+
   // 上移
   moveUp(index: number): void {
     if (index === 0) {
@@ -106,6 +188,7 @@ export default class SystemComponentComponent {
     const prevData = this.components[index - 1]
     this.components[index - 1] = current
     this.components[index] = prevData
+    this.changed()
   }
 
   // 下移
@@ -117,6 +200,7 @@ export default class SystemComponentComponent {
     const next = this.components[index + 1]
     this.components[index + 1] = current
     this.components[index] = next
+    this.changed()
   }
 
   handleEdit(data: any, idx: number) {
@@ -142,17 +226,17 @@ export default class SystemComponentComponent {
       ...data,
       id: max,
     })
+    this.changed()
   }
 
   onDelete(idx: number) {
     this.components.splice(idx, 1)
+    this.changed()
   }
 
   handleZoomChange(value: number) {
-    component.update((prev) => {
-      prev.zoom = value
-      return prev
-    })
+    if (!this.embedded) component.update((prev) => ({ ...prev, zoom: value }))
+    this.changed()
   }
 
   handleOk(data: any) {
@@ -162,6 +246,7 @@ export default class SystemComponentComponent {
       ...values,
     }
     event.emit('COMPONENT_OK')
+    this.changed()
   }
 
   handleSubmit() {
@@ -185,6 +270,7 @@ export default class SystemComponentComponent {
           path: COMPONENT_PATH,
         })
           .then(() => {
+            component.set(params)
             this.message.success($t('_saveSuccess'))
           })
           .finally(() => {

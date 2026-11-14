@@ -22,12 +22,11 @@ export class OffWorkComponent {
   private timer: any
   countdownStr = ''
   isRest = false
+  private readonly onVisibilityChange = (event: Event) =>
+    this.visibilitychange(event)
 
   constructor() {
-    document.addEventListener(
-      'visibilitychange',
-      this.visibilitychange.bind(this),
-    )
+    document.addEventListener('visibilitychange', this.onVisibilityChange)
   }
 
   ngOnChanges() {
@@ -37,7 +36,7 @@ export class OffWorkComponent {
 
   ngOnDestroy() {
     clearTimeout(this.timer)
-    document.removeEventListener('visibilitychange', this.visibilitychange)
+    document.removeEventListener('visibilitychange', this.onVisibilityChange)
   }
 
   private visibilitychange(e: any) {
@@ -79,9 +78,9 @@ export class OffWorkComponent {
         }
       } else {
         this.isRest = true
-        return clearTimeout(this.timer)
+        this.countdownStr = ''
       }
-      this.isRest = false
+      if (nowTime >= startTime && nowTime <= dateTime) this.isRest = false
     }
     this.timer = setTimeout(() => this.init(), 1000)
   }

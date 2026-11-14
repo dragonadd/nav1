@@ -16,3 +16,15 @@ export const componentTitleMap: Record<string, string> = {
   [ComponentType.News]: $t('_news'),
   [ComponentType.Carousel]: $t('_carousel'),
 }
+
+export const componentHelpMap: Record<number, string> = {
+  [ComponentType.Calendar]: $t('_widgetCalendarHelp'),
+  [ComponentType.OffWork]: $t('_widgetOffWorkHelp'),
+  [ComponentType.Runtime]: $t('_widgetRuntimeHelp'),
+  [ComponentType.Image]: $t('_widgetImageHelp'),
+  [ComponentType.Countdown]: $t('_widgetCountdownHelp'),
+  [ComponentType.HTML]: $t('_widgetHtmlHelp'),
+  [ComponentType.Holiday]: $t('_widgetHolidayHelp'),
+  [ComponentType.News]: $t('_widgetNewsHelp'),
+  [ComponentType.Carousel]: $t('_widgetCarouselHelp'),
+}

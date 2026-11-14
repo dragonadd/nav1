@@ -6,6 +6,7 @@ import { Component } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { CommonService } from 'src/services/common'
 import { SearchComponent } from 'src/components/search/index.component'
+import { DailyTextComponent } from 'src/components/daily-text/index.component'
 import { CardComponent } from 'src/components/card/index.component'
 import { FooterComponent } from 'src/components/footer/footer.component'
 import { ToolbarTitleWebComponent } from 'src/components/toolbar-title/index.component'
@@ -16,6 +17,7 @@ import { FixbarComponent } from 'src/components/fixbar/index.component'
   imports: [
     CommonModule,
     SearchComponent,
+    DailyTextComponent,
     CardComponent,
     FooterComponent,
     ToolbarTitleWebComponent,

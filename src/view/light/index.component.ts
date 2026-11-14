@@ -15,6 +15,7 @@ import { CommonService } from 'src/services/common'
 import { ComponentGroupComponent } from 'src/components/component-group/index.component'
 import { WebMoreMenuComponent } from 'src/components/web-more-menu/index.component'
 import { SearchComponent } from 'src/components/search/index.component'
+import { DailyTextComponent } from 'src/components/daily-text/index.component'
 import { NzSpinModule } from 'ng-zorro-antd/spin'
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip'
 import { CardComponent } from 'src/components/card/index.component'
@@ -35,6 +36,7 @@ import { SidebarComponent } from 'src/components/sidebar/index.component'
     ComponentGroupComponent,
     WebMoreMenuComponent,
     SearchComponent,
+    DailyTextComponent,
     NzSpinModule,
     NzToolTipModule,
     CardComponent,

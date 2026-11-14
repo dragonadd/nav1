@@ -155,13 +155,118 @@
               <label nz-checkbox formControlName="openSEO"></label>
             </nz-form-control>
           </nz-form-item>
-          <nz-form-item>
-            <nz-form-label [nzSpan]="4">{{ $t('_components') }}</nz-form-label>
-            <nz-form-control [nzSpan]="20">
+        </div>
+      </section>
+      <section class="settings-card widget-settings">
+        <div class="settings-card-heading">
+          <h2>{{ $t('_widgetSettings') }}</h2>
+          <p>{{ $t('_widgetSettingsHelp') }}</p>
+        </div>
+        <div class="settings-grid">
+          <nz-form-item class="settings-wide">
+            <nz-form-label>{{ $t('_widgetVisibility') }}</nz-form-label>
+            <nz-form-control>
               <nz-checkbox-group
                 [nzOptions]="componentOptions"
                 formControlName="componentOptions"
-              ></nz-checkbox-group>
+              />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item class="settings-wide">
+            <nz-form-label>{{ $t('_widgetRuntimeStart') }}</nz-form-label>
+            <nz-form-control [nzExtra]="$t('_widgetRuntimeStartHelp')">
+              <nz-date-picker
+                formControlName="runtime"
+                [nzShowTime]="true"
+                nzFormat="yyyy-MM-dd HH:mm"
+              />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <system-component
+          [embedded]="true"
+          [enabledIds]="validateForm.get('componentOptions')?.value || []"
+          (configChange)="widgetDraft = $event"
+        />
+      </section>
+      <section class="settings-card web-info-settings">
+        <div class="settings-card-heading">
+          <h2>{{ $t('_webInfoSettings') }}</h2>
+          <p>{{ $t('_webInfoSettingsHelp') }}</p>
+        </div>
+        <div class="settings-grid">
+          <nz-form-item class="settings-wide">
+            <nz-form-label>{{ $t('_webInfoApi') }}</nz-form-label>
+            <nz-form-control [nzExtra]="$t('_webInfoApiHelp')">
+              <input
+                nz-input
+                formControlName="webInfoApi"
+                placeholder="https://example.com/info?url={url}"
+              />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label>{{ $t('_webInfoMethod') }}</nz-form-label>
+            <nz-form-control>
+              <nz-radio-group formControlName="webInfoMethod"
+                ><label nz-radio nzValue="GET">GET</label
+                ><label nz-radio nzValue="POST"
+                  >POST JSON</label
+                ></nz-radio-group
+              >
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item
+            ><nz-form-label>{{ $t('_webInfoTitlePath') }}</nz-form-label
+            ><nz-form-control
+              ><input
+                nz-input
+                formControlName="webInfoTitlePath"
+                placeholder="data.title" /></nz-form-control
+          ></nz-form-item>
+          <nz-form-item
+            ><nz-form-label>{{ $t('_webInfoIconPath') }}</nz-form-label
+            ><nz-form-control
+              ><input
+                nz-input
+                formControlName="webInfoIconPath"
+                placeholder="data.icon" /></nz-form-control
+          ></nz-form-item>
+          <nz-form-item
+            ><nz-form-label>{{ $t('_webInfoDescriptionPath') }}</nz-form-label
+            ><nz-form-control
+              ><input
+                nz-input
+                formControlName="webInfoDescriptionPath"
+                placeholder="data.description" /></nz-form-control
+          ></nz-form-item>
+          <p class="settings-wide text-gray-500">
+            {{ $t('_webInfoMappingHelp') }}
+          </p>
+          <nz-form-item class="settings-wide">
+            <nz-form-label>{{ $t('_webInfoTestUrl') }}</nz-form-label>
+            <nz-form-control>
+              <input
+                nz-input
+                [(ngModel)]="webInfoTestUrl"
+                [ngModelOptions]="{ standalone: true }"
+                placeholder="https://example.com/"
+              />
+              <button
+                type="button"
+                nz-button
+                class="mt-2"
+                [nzLoading]="testingWebInfo"
+                (click)="testWebInfo()"
+              >
+                {{ $t('_webInfoTest') }}
+              </button>
+              <pre
+                *ngIf="webInfoTestResult"
+                class="web-info-result"
+                aria-live="polite"
+                >{{ webInfoTestResult }}</pre
+              >
             </nz-form-control>
           </nz-form-item>
         </div>
@@ -767,16 +872,6 @@
           <nz-tab [nzTitle]="'Side ' + $t('_theme')">
             <p class="mb-5 text-gray-500">{{ $t('_sideThemeDescription') }}</p>
             <nz-form-item>
-              <nz-form-label [nzSpan]="4">{{ $t('_title') }}</nz-form-label>
-              <nz-form-control [nzSpan]="16">
-                <input
-                  nz-input
-                  formControlName="sideTitle"
-                  [placeholder]="$t('_defaultTitle')"
-                />
-              </nz-form-control>
-            </nz-form-item>
-            <nz-form-item>
               <nz-form-label [nzSpan]="4">{{
                 $t('_backgroundImage')
               }}</nz-form-label>
@@ -976,6 +1071,25 @@
             </nz-form-control>
           </nz-form-item>
           <nz-form-item class="settings-wide">
+            <nz-form-label>{{ $t('_dailyAlign') }}</nz-form-label>
+            <nz-form-control [nzExtra]="$t('_dailyAlignHelp')">
+              <nz-radio-group formControlName="hitokotoAlign">
+                <label nz-radio nzValue="left">{{
+                  $t('_dailyAlignLeft')
+                }}</label>
+                <label nz-radio nzValue="center">{{
+                  $t('_dailyAlignCenter')
+                }}</label>
+                <label nz-radio nzValue="right">{{
+                  $t('_dailyAlignRight')
+                }}</label>
+                <label nz-radio nzValue="justify">{{
+                  $t('_dailyAlignJustify')
+                }}</label>
+              </nz-radio-group>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item class="settings-wide">
             <nz-form-label>{{ $t('_dailyCustom') }}</nz-form-label>
             <nz-form-control [nzExtra]="$t('_dailyTemplateHelp')">
               <textarea
@@ -1154,19 +1268,6 @@
             }}</label>
           </nz-form-control>
         </nz-form-item>
-
-        <!-- <nz-form-item *ngIf="isSelfDevelop">
-    <nz-form-label [nzSpan]="4" [nzNoColon]="true">{{
-      $t('_spiderImg')
-    }}</nz-form-label>
-    <nz-form-control [nzSpan]="20">
-      <nz-radio-group formControlName="spiderImg">
-        <label nz-radio nzValue="NO">{{ $t('_notSpider') }}</label>
-        <label nz-radio nzValue="EMPTY">{{ $t('_spiderEmpty') }}</label>
-        <label nz-radio nzValue="ALWAYS">{{ $t('_spiderAlways') }}</label>
-      </nz-radio-group>
-    </nz-form-control>
-  </nz-form-item> -->
 
         <nz-form-item>
           <nz-form-label [nzSpan]="4">{{ $t('_spiderQty') }}</nz-form-label>

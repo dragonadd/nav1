@@ -240,7 +240,7 @@ try {
   assert.equal(
     await page.$('[data-admin-route="auth"]'),
     null,
-    '后台不再提供上游绑定域名入口',
+    '后台不提供域名绑定入口',
   )
   await page.goto(route('system/info'), { waitUntil: 'networkidle0' })
   const versionUrl = new URL(

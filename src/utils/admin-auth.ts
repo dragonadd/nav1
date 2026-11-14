@@ -1,4 +1,4 @@
-// 后台凭证加密参考 NavBlog，使用独立格式，不与博客凭证互通。
+// 后台 Git 凭证加密与仓库身份绑定。
 export const AUTH_PATH = 'data/auth.json'
 export const AUTH_MAX_LENGTH = 8192
 const ITERATIONS = 600_000

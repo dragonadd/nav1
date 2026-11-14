@@ -254,7 +254,7 @@ export class CreateWebComponent {
   }
 
   async onUrlBlur() {
-    if (!this.settings.openSearch) {
+    if (!settings().openSearch) {
       return
     }
     let url = this.url
@@ -276,20 +276,25 @@ export class CreateWebComponent {
       }
 
       this.getting = true
+      const enteredUrl = this.url
       const res = await getWebInfo(url)
-      if (res['url'] != null && !iconVal) {
+      if (this.url !== enteredUrl || !this.showModal) return
+      if (res['url'] != null && !this.validateForm.get('icon')?.value) {
         this.validateForm.get('icon')!.setValue(res['url'])
       }
-      if (res['title'] != null && !titleVal) {
+      if (res['title'] != null && !this.validateForm.get('title')?.value) {
         this.validateForm.get('title')!.setValue(res['title'])
       }
-      if (res['description'] != null && !descVal) {
+      if (res['description'] != null && !this.validateForm.get('desc')?.value) {
         this.validateForm.get('desc')!.setValue(res['description'])
       }
-      this.getting = false
       this.inputUrlRef?.nativeElement?.blur()
       this.checkRepeat()
-    } catch {}
+    } catch (error) {
+      this.message.error(error instanceof Error ? error.message : $t('_error'))
+    } finally {
+      this.getting = false
+    }
   }
 
   addMoreUrl() {

@@ -1,4 +1,6 @@
-// 每日文字来源与解析沿用 NavBlog，并接入导航站设置。
+// 每日文字配置与来源解析，供浏览器、后台和构建脚本共用。
+export type DailyTextAlignment = 'left' | 'center' | 'right' | 'justify'
+
 export interface DailyTextSettings {
   hitokotoApi?: string
   hitokotoEnable?: boolean
@@ -8,9 +10,9 @@ export interface DailyTextSettings {
   hitokotoCustomText?: string
   hitokotoShowFrom?: boolean
   hitokotoMaxLength?: number
+  hitokotoAlign?: DailyTextAlignment
 }
 
-/** 参考 daily-push 的文字来源思路，供浏览器和后台共用。 */
 export interface DailySource {
   label: string
   url: string
@@ -265,6 +267,12 @@ export function dailyTextLimit(value?: number): number {
   return Math.min(4000, Math.max(100, Math.round(Number(value) || 1200)))
 }
 
+export function dailyTextAlign(value: unknown): DailyTextAlignment {
+  return value === 'left' || value === 'right' || value === 'justify'
+    ? value
+    : 'center'
+}
+
 export function limitDailyText(text: string, limit: number): string {
   const characters = Array.from(text)
   return characters.length > limit
@@ -280,4 +288,5 @@ export function initializeDailyTextSettings(settings: DailyTextSettings): void {
   settings.hitokotoSources ??= sourceText(settings)
   settings.hitokotoCustomText ??= ''
   settings.hitokotoMaxLength = dailyTextLimit(settings.hitokotoMaxLength)
+  settings.hitokotoAlign = dailyTextAlign(settings.hitokotoAlign)
 }

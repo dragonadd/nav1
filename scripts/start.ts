@@ -6,6 +6,7 @@ import fs from 'fs'
 import { prepareAuth } from './prepare-auth'
 import { migrateSideSettings } from '../src/utils/side-settings'
 import { initializeDailyTextSettings } from '../src/utils/daily-text'
+import { initializeWebInfoSettings } from '../src/utils/web-info'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc.js'
 import timezone from 'dayjs/plugin/timezone.js'
@@ -399,6 +400,7 @@ const main = async () => {
 
     migrateSideSettings(settings)
     initializeDailyTextSettings(settings)
+    initializeWebInfoSettings(settings)
 
     settings.lightDocTitle ||= ''
     settings.lightCardStyle ||= 'standard'

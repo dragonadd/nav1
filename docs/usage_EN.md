@@ -21,7 +21,21 @@ Setting, changing or removing a password also requires deployment. Use a strong 
 
 Category links such as `/side?id=3` can be bookmarked and shared. Repeated clicks keep the same URL. IDs depend on your own navigation data.
 
+The homepage redirects to the default theme's address, such as `/side`, while preserving category and search parameters.
+
 Login-only visibility is a display setting; published static data may still be read directly.
+
+## Automatic website information
+
+When adding a website, entering a valid URL and leaving the input requests its name, icon URL and description. Only empty fields are filled. Enable or disable this under **System settings → Display and interaction → Enter link to allow searching**; the same switch also controls homepage search.
+
+Configure the endpoint, GET / POST method and field paths under **System settings → Display and interaction → Automatic website information**. Enter a test website URL, use **Test current configuration**, then save.
+
+For `{"data":{"name":"Example","icon":"/favicon.ico","summary":"Description"}}`, use `data.name`, `data.icon` and `data.summary`. Dot paths support array indexes, such as `items.0.title`; blank paths skip fields. Returned values must be strings. Relative icon URLs resolve against the target website.
+
+GET adds a `url` query parameter by default. Use `{url}` to choose its position, for example `https://example.com/info?target={url}`. POST sends `{"url":"website URL"}`. Custom requests include the website URL without Git Tokens, passwords or Cookies. The API must allow CORS; use HTTPS APIs on HTTPS sites. Testing only reads information.
+
+Leave the endpoint blank to use the default: `POST https://api.nav3.cn/api/icon` for static hosting or `POST {address}/api/web/info` in API server mode. **Advanced settings → Spider rule** controls batch updates during builds; it is separate from automatic filling when adding a website.
 
 ## Category icons
 
@@ -47,16 +61,36 @@ System settings has five tabs:
 | Site information        | Logo, title, description, keywords, language, email and image CDN        |
 | Display and interaction | Search, shortcuts, loading content, widgets and mobile PWA               |
 | Theme settings          | Default and mobile themes, banners, cards and footers                    |
-| Daily text              | Sources, custom text, title, attribution and character limit             |
+| Daily text              | Sources, custom text, title, attribution, alignment and character limit  |
 | Advanced settings       | Visitor permissions, shortcuts, save requests, HTML and crawler settings |
 
 **Save** submits changes from every tab. The site description is used for SEO; an empty theme page title uses the global title. Use trusted content for custom HTML.
 
-Side provides banner search, category navigation and grid cards. Configure its heading, banner, page title and footer under **Theme settings → Side**. Other themes have their own tabs. The mobile theme can be selected independently or follow the current page.
+Side provides banner search, category navigation and grid cards. Configure its banner, page title and footer under **Theme settings → Side**. The sidebar brand uses the global site title. Other themes have their own tabs. The mobile theme can be selected independently or follow the current page.
+
+## Widgets and parameters
+
+Open **System settings → Display and interaction → Widgets and parameters**. Select visible widgets, expand their explanations and use **Edit parameters**. Submit the editor, then use Save at the bottom to publish widget parameters and site settings. Wait for deployment before refreshing. Visibility changes do not delete widget data.
+
+| Widget    | Content and calculation                                                                                          | Editable parameters                                                                                      |
+| --------- | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Calendar  | Visitor's local date, weekday and day of year                                                                    | Header and background colors                                                                             |
+| Off work  | Compares daily local start and finish times; counts down during work hours and displays the rest title otherwise | Both times and titles; defaults to 09:00–18:00. Weekends, holidays and overnight shifts are not detected |
+| Image     | Your image URL with a caption and optional click destination                                                     | Image URL or upload, caption, destination; blank destinations disable navigation                         |
+| Countdown | Whole days until a target date; past dates show zero                                                             | Date, label, image and colors; labels do not update dates automatically                                  |
+| Runtime   | Days since the site start time, switching to whole years after one year                                          | Site start time above and the title in its editor                                                        |
+| HTML      | Custom content                                                                                                   | Trusted HTML, width and background color                                                                 |
+| Holidays  | Up to four holidays that have not ended                                                                          | Names, start dates and durations; add manually or fetch from the API                                     |
+| News      | Trending news from selected platforms, cached for one hour                                                       | Sources, item count and background color; requires network access                                        |
+| Carousel  | Rotates through your image list                                                                                  | Images, click destinations, width and fit: `contain`, `cover` or `fill`                                  |
+
+The scale slider adjusts all widgets. Light, Super, Sim and Side show this widget group; App and Shortcut use their own layouts. Replace the sample countdown date with your own target date.
 
 ## Daily quotes and text
 
-Configure the card under **System settings → Daily text**. It appears below the Side banner.
+Configure daily text under **System settings → Daily text**. All six themes share these settings and display text over a transparent background. Light, Super, Sim and App place it below the website content and above the footer. Side displays it inside the banner; Shortcut places it in the scrollable content area.
+
+Choose Left, Center, Right or Justify for text alignment. Center is the default. Only the text alignment changes; the daily text area stays in the same position in each theme.
 
 | Source       | Content          |
 | ------------ | ---------------- |

@@ -7,12 +7,19 @@ const english: Record<string, any> = {
   _settingsDaily: 'Daily text',
   _dailyTitle: 'Daily quote',
   _dailySettingsDescription:
-    'Show daily text below the Side banner. Sources are cached by day; custom text also works on its own.',
+    'Show daily text in every theme. Sources are cached by day; custom text also works on its own.',
   _dailyEnable: 'Enable daily text',
   _dailyShowTitle: 'Show card title',
   _dailyCardTitle: 'Card title',
   _dailyShowFrom: 'Show author and attribution',
   _dailyLimit: 'Maximum characters per source',
+  _dailyAlign: 'Text alignment',
+  _dailyAlignLeft: 'Left',
+  _dailyAlignCenter: 'Center',
+  _dailyAlignRight: 'Right',
+  _dailyAlignJustify: 'Justify',
+  _dailyAlignHelp:
+    'Only text alignment changes; daily text stays in the same place in each theme.',
   _dailySources: 'Sources (one per line, up to 5)',
   _dailySourcesHelp:
     'Use a preset name or a URL, such as “My quote | https://example.com/quote | data.content”. JSON, arrays and plain text are supported. Append “| nofrom” to hide attribution. APIs must support CORS; use HTTPS APIs on HTTPS sites.',
@@ -35,6 +42,59 @@ const english: Record<string, any> = {
     'Set the site identity, search description and contact information.',
   _settingsDisplay: 'Display and interaction',
   _settingsDisplayDescription: 'Adjust search, shortcuts and visible tools.',
+  _widgetSettings: 'Widgets and parameters',
+  _widgetSettingsHelp:
+    'Select widgets, expand their explanations and edit parameters. Submit the editor, then use Save below to publish widgets and settings. Light, Super, Sim and Side show this group; App and Shortcut do not.',
+  _widgetVisibility: 'Visible widgets',
+  _widgetEnabled: 'Selected',
+  _widgetHidden: 'Not selected',
+  _widgetEditParameters: 'Edit parameters',
+  _widgetScale: 'Widget scale',
+  _widgetRuntimeStart: 'Site start time',
+  _widgetRuntimeStartHelp:
+    'Used by the runtime widget; does not change calendars, work hours or countdowns.',
+  _widgetInvalidStart: 'Enter a valid site start time.',
+  _widgetPartialSave:
+    'Widget parameters were saved, but site settings failed. Retry saving settings.',
+  _widgetImageUrl: 'Image URL',
+  _widgetTargetDate: 'Target date',
+  _widgetWidth: 'Width (pixels)',
+  _widgetFit: 'Image fit',
+  _widgetNewsSources: 'News sources',
+  _widgetNewsCount: 'Items per source',
+  _widgetCalendarHelp:
+    'Shows the visitor’s local date, weekday and day of year. Edit header and background colors; dates come from the visitor’s device.',
+  _widgetOffWorkHelp:
+    'Compares local time with daily start and finish times. Shows time remaining during work hours and the rest title outside them. Defaults to 09:00–18:00; weekends, holidays and overnight shifts are not detected. Edit both times and titles.',
+  _widgetRuntimeHelp:
+    'Counts days from the site start time, switching to whole years after one year. Set the start time above and edit the title in the editor.',
+  _widgetImageHelp:
+    'An image card using your URL. Edit the image, caption and click destination; leave the destination blank to disable navigation.',
+  _widgetCountdownHelp:
+    'Counts whole days until a target date. Past dates show zero; labels such as New Year do not update dates automatically. Edit the label, date, image and colors.',
+  _widgetHtmlHelp:
+    'Displays custom HTML. Edit code, width and background color. Use trusted content.',
+  _widgetHolidayHelp:
+    'Shows up to four holidays that have not ended. Edit names, start dates and durations; fetch holidays from the API or add them manually. Past holidays are hidden.',
+  _widgetNewsHelp:
+    'Loads trending news from selected platforms with a one-hour browser cache. Edit sources, item count and background color. Requires network access.',
+  _widgetCarouselHelp:
+    'Rotates through your images. Edit images, click destinations, width and fit: contain shows the full image, cover crops it, fill stretches it.',
+  _webInfoSettings: 'Automatic website information',
+  _webInfoSettingsHelp:
+    'Fills empty names, icons and descriptions after entering a URL. Custom requests include the URL without repository Tokens. The link lookup switch enables this feature.',
+  _webInfoApi: 'Custom API URL',
+  _webInfoApiHelp:
+    'Leave blank for the default API. GET sends a url parameter or substitutes {url}; POST sends {"url":"website URL"}. Return JSON and allow CORS. Use HTTPS APIs on HTTPS sites.',
+  _webInfoMethod: 'Request method',
+  _webInfoTitlePath: 'Name field path',
+  _webInfoIconPath: 'Icon field path',
+  _webInfoDescriptionPath: 'Description field path',
+  _webInfoMappingHelp:
+    'For {"data":{"name":"Example","icon":"/favicon.ico","summary":"Description"}}, use data.name, data.icon and data.summary. Blank paths skip fields; relative icon paths resolve against the target website.',
+  _webInfoTestUrl: 'Test website URL',
+  _webInfoTest: 'Test current configuration',
+  _webInfoInvalidUrl: 'Enter an HTTP(S) website URL.',
   _settingsThemes: 'Theme settings',
   _settingsThemesDescription:
     'Choose the default theme and customize banners, cards and footers.',
@@ -83,12 +143,11 @@ const english: Record<string, any> = {
     'Manage site appearance, content and theme settings.',
   _adminPasswordDescription: 'Set, change or remove the admin login password.',
   _sideThemeDescription:
-    'Side theme: category sidebar, banner search and grid cards using your existing navigation data.',
+    'Side theme: category sidebar, banner search and grid cards.',
   _sideBannerHint:
-    'Use an image URL, or leave blank for a gradient. Empty title, description and footer fields use global settings.',
+    'Use an image URL, or leave blank for a gradient. An empty footer uses the global settings.',
   _sideNavigation: 'Categories',
   _sideResults: 'Search results',
-  _sideWebsites: 'websites',
   _sideSearch: 'Site search',
   _sideSearchPlaceholder: 'Search your saved websites…',
   _sideEmptySection: 'No websites in this category yet.',
@@ -404,8 +463,8 @@ const english: Record<string, any> = {
   _timeColor: 'Time color',
   _date: 'Date',
   _time: 'Time',
-  _workHours: 'Work hours',
-  _breakTime: 'Break time',
+  _workHours: 'Work start time',
+  _breakTime: 'Work finish time',
   _holiday: 'Holiday',
   _year: 'Year',
   _day: 'Day',

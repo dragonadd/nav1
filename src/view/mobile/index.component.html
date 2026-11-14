@@ -73,7 +73,10 @@
     </div>
   </div>
 
-  <app-footer />
+  <div class="page-bottom">
+    <app-daily-text class="inset" />
+    <app-footer />
+  </div>
   <app-fixbar
     (onCollapse)="commonService.onCollapseAll()"
     [collapsed]="commonService.collapsed"

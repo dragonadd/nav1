@@ -3,7 +3,7 @@
 # Compiled output
 /dist
 /tmp
-# Local agent work records
+# Local development files
 /docs/superpowers/
 /.superpowers/
 /out-tsc

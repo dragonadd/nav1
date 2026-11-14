@@ -10,14 +10,14 @@ Deploy the website as static files and keep its content in a Git repository. The
 
 ## Features
 
-| Feature              | What you can do                                                                                     |
-| -------------------- | --------------------------------------------------------------------------------------------------- |
-| Organize bookmarks   | Three-level categories, colored tags, moving, references, bulk actions and bookmark import / export |
-| Find links quickly   | Site search, custom search engines and stable category links you can bookmark or share              |
-| Choose an appearance | Light, Super, Sim, Side, Shortcut and App themes, with dark mode and mobile layouts                 |
-| Edit online          | Manage websites, categories and settings through password or Token login                            |
-| Daily text           | Quotes, poetry and custom text with multiple sources, date variables and daily caching              |
-| Customize pages      | Banners, category icons, calendars, countdowns, images, news, HTML widgets and mobile PWA settings  |
+| Feature              | What you can do                                                                                                               |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| Organize bookmarks   | Three-level categories, colored tags, moving, references, bulk actions and bookmark import / export                           |
+| Find links quickly   | Site search, custom search engines and stable category links you can bookmark or share                                        |
+| Choose an appearance | Light, Super, Sim, Side, Shortcut and App themes, with dark mode and mobile layouts                                           |
+| Edit online          | Manage websites, categories, widget parameters and settings, with a custom website information API and password / Token login |
+| Daily text           | Quotes, poetry and custom text in every theme, with multiple sources, date variables and daily caching                        |
+| Customize pages      | Banners, category icons, calendars, countdowns, images, news, HTML widgets and mobile PWA settings                            |
 
 Built with Angular 21, TypeScript 5.9, ng-zorro-antd and Tailwind CSS. GitHub, Gitee and GitLab repositories are supported.
 

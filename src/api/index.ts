@@ -24,6 +24,7 @@ import {
 import LZString from 'lz-string'
 import event from 'src/utils/mitt'
 import { getRepositories, validateTokenText } from 'src/utils/admin-auth'
+import { requestCustomWebInfo, type WebInfoSettings } from 'src/utils/web-info'
 
 const { gitRepoUrl, imageRepoUrl } = config
 const s = gitRepoUrl.split('?')[0].split('/')
@@ -362,7 +363,11 @@ export function delUserCollect(data?: Record<string, any>) {
   return httpNav.post('/api/delete', data)
 }
 
-export async function getWebInfo(url: string) {
+export async function getWebInfo(
+  url: string,
+  options: WebInfoSettings = settings(),
+) {
+  if (options.webInfoApi?.trim()) return requestCustomWebInfo(url, options)
   try {
     if (isSelfDevelop) {
       const res = await http.post('/api/web/info', { url })

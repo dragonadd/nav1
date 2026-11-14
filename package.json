@@ -10,7 +10,7 @@
     "start": "tsx ./scripts/start.ts && ng serve --host 0.0.0.0 --port=7002 --live-reload=false",
     "start:reload": "tsx ./scripts/start.ts && ng serve --host 0.0.0.0 --port=7002",
     "init": "tsx ./scripts/start.ts",
-    "test": "tsx ./scripts/test-daily-text.ts && tsx ./scripts/test-icons.ts && tsx ./scripts/test-side-settings.ts && tsx ./scripts/test-deployment-branch.ts && tsx ./scripts/test-pages-config.ts && tsx ./scripts/test-pages-selection.ts && tsx ./scripts/start.ts && tsx ./scripts/test-admin-auth.ts && tsx ./scripts/test-auth-api.ts && tsx ./scripts/test-auth-build.ts",
+    "test": "tsx ./scripts/test-daily-text.ts && tsx ./scripts/test-icons.ts && tsx ./scripts/test-side-settings.ts && tsx ./scripts/test-deployment-branch.ts && tsx ./scripts/test-pages-config.ts && tsx ./scripts/test-pages-selection.ts && tsx ./scripts/start.ts && tsx ./scripts/test-web-info.ts && tsx ./scripts/test-widgets.ts && tsx ./scripts/test-admin-auth.ts && tsx ./scripts/test-auth-api.ts && tsx ./scripts/test-auth-build.ts",
     "test:auth-ui": "tsx ./scripts/test-auth-ui.ts",
     "test:themes": "tsx ./scripts/test-theme-ui.ts",
     "test:auth-bundle": "tsx ./scripts/test-auth-bundle.ts",

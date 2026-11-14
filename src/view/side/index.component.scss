@@ -56,7 +56,7 @@ a {
   position: fixed;
   inset: 0 auto 0 0;
   z-index: 35;
-  width: 240px;
+  width: 220px;
   display: flex;
   flex-direction: column;
   background: var(--side-card);
@@ -110,7 +110,7 @@ a {
   }
 }
 .side-main {
-  margin-left: 240px;
+  margin-left: 220px;
   min-height: 100vh;
   background-image:
     linear-gradient(var(--side-line) 1px, transparent 1px),
@@ -120,7 +120,7 @@ a {
 .side-hero {
   position: relative;
   isolation: isolate;
-  min-height: 255px;
+  min-height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -137,14 +137,6 @@ a {
     z-index: -1;
     background: linear-gradient(115deg, #26345052, #16448273);
   }
-  h1 {
-    margin: 0 0 16px;
-    color: #fff;
-    font-size: 27px;
-    font-weight: 700;
-    text-align: center;
-    text-shadow: 0 2px 8px #0002;
-  }
 }
 .side-hero app-search {
   width: 100%;
@@ -154,32 +146,6 @@ a {
   max-width: 1440px;
   margin: 0 auto;
   padding: 26px 32px 40px;
-}
-.content-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin: 4px 0 26px;
-  h2 {
-    margin: 5px 0 0;
-    color: var(--side-text);
-    font-size: 20px;
-    font-weight: 650;
-  }
-}
-.section-caption {
-  color: var(--side-muted);
-  font-size: 11px;
-}
-.count-badge {
-  padding: 5px 11px;
-  color: var(--side-muted);
-  background: var(--side-card);
-  border: 1px solid var(--side-border);
-  border-radius: 20px;
-  font-size: 11px;
-  white-space: nowrap;
 }
 .nav-wrapper {
   margin-bottom: 28px;
@@ -290,7 +256,7 @@ a {
   }
   .side-sidebar {
     top: 58px;
-    width: 240px;
+    width: 220px;
     transform: translateX(-100%);
     transition: transform 0.2s;
     &.is-open {
@@ -311,11 +277,8 @@ a {
     margin-left: 0;
   }
   .side-hero {
-    min-height: 228px;
+    min-height: 180px;
     padding: 24px 16px 22px;
-    h1 {
-      font-size: 22px;
-    }
   }
   .side-content {
     padding: 23px 14px 40px;
@@ -323,12 +286,6 @@ a {
   .side-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
-  }
-  .content-heading {
-    margin-bottom: 22px;
-    h2 {
-      font-size: 18px;
-    }
   }
 }
 @media (prefers-reduced-motion: reduce) {

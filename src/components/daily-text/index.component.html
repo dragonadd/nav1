@@ -1,6 +1,7 @@
 @if (enabled()) {
   <section
     class="daily-text"
+    [style.text-align]="alignment()"
     [attr.aria-label]="title()"
     [attr.aria-busy]="loading()"
   >

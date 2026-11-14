@@ -2,6 +2,7 @@
 // Copyright @ 2018-present xiejiahe. All rights reserved.
 // See https://github.com/xjh22222228/nav
 import type { DailyTextSettings } from '../utils/daily-text'
+import type { WebInfoSettings } from '../utils/web-info'
 
 export type ThemeType = 'Light' | 'Sim' | 'Side' | 'App' | 'Shortcut' | 'Super'
 
@@ -228,7 +229,7 @@ export interface IClassProps {
   ownVisible?: boolean
 }
 
-export interface ISettings extends DailyTextSettings {
+export interface ISettings extends DailyTextSettings, WebInfoSettings {
   favicon: string
   language: 'zh-CN' | 'en'
   loading: string

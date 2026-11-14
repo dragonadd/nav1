@@ -17,6 +17,7 @@ import { CommonService } from 'src/services/common'
 import { ComponentGroupComponent } from 'src/components/component-group/index.component'
 import { WebMoreMenuComponent } from 'src/components/web-more-menu/index.component'
 import { SearchComponent } from 'src/components/search/index.component'
+import { DailyTextComponent } from 'src/components/daily-text/index.component'
 import { NzSpinModule } from 'ng-zorro-antd/spin'
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip'
 import { CardComponent } from 'src/components/card/index.component'
@@ -38,6 +39,7 @@ import { SidebarComponent } from 'src/components/sidebar/index.component'
     ComponentGroupComponent,
     WebMoreMenuComponent,
     SearchComponent,
+    DailyTextComponent,
     NzSpinModule,
     NzToolTipModule,
     CardComponent,
@@ -61,9 +63,8 @@ export default class SimComponent {
 
   constructor(public commonService: CommonService) {}
 
-  // 
   ngOnInit() {
-    // 加延迟确保DOM渲染完成，100%命中元素
+    // 背景容器渲染后应用渐变。
     setTimeout(() => {
       randomBgImg()
     }, 100)
@@ -71,7 +72,6 @@ export default class SimComponent {
 
   ngOnDestroy() {
     this.commonService.setOverIndex()
-    // 👇 退出时清理渐变，防止残留
     removeBgImg()
   }
 

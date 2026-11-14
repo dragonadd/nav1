@@ -3,6 +3,8 @@ $bg-color: #fbfbfb;
 .app-page {
   padding: 45px 0 0 0;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   background: #f6f6f6;
   overflow: hidden;
 
@@ -92,7 +94,7 @@ $bg-color: #fbfbfb;
   }
 
   .wrapper {
-    margin: 0 0 60px 0;
+    flex: 1;
 
     .children-nav {
       background: $bg-color;
@@ -124,5 +126,11 @@ $bg-color: #fbfbfb;
         background: #20a0ff;
       }
     }
+  }
+  .page-bottom {
+    display: flow-root;
+    flex-shrink: 0;
+    margin-top: auto;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
   }
 }

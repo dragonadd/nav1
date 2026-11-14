@@ -4,11 +4,8 @@ export async function unregisterServiceWorkers(): Promise<boolean> {
     if ('serviceWorker' in navigator) {
       const registrations = await navigator.serviceWorker.getRegistrations()
 
-      console.log(`找到 ${registrations.length} 个Service Worker注册`)
-
       for (const registration of registrations) {
         await registration.unregister()
-        console.log('成功卸载Service Worker:', registration.scope)
       }
     }
 
@@ -16,11 +13,8 @@ export async function unregisterServiceWorkers(): Promise<boolean> {
     if ('caches' in window) {
       const cacheNames = await caches.keys()
 
-      console.log(`找到 ${cacheNames.length} 个缓存`)
-
       for (const cacheName of cacheNames) {
         await caches.delete(cacheName)
-        console.log('成功删除缓存:', cacheName)
       }
     }
 

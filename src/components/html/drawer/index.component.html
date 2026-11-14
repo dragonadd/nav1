@@ -8,8 +8,8 @@
 >
   <form nz-form [formGroup]="validateForm" *nzDrawerContent>
     <nz-form-item>
-      <nz-form-label [nzSpan]="4">HTML</nz-form-label>
-      <nz-form-control [nzSpan]="20">
+      <nz-form-label [nzSpan]="8">HTML</nz-form-label>
+      <nz-form-control [nzSpan]="16">
         <textarea
           formControlName="html"
           nz-input
@@ -20,15 +20,15 @@
     </nz-form-item>
 
     <nz-form-item>
-      <nz-form-label [nzSpan]="4">Width</nz-form-label>
-      <nz-form-control [nzSpan]="20">
+      <nz-form-label [nzSpan]="8">{{ $t('_widgetWidth') }}</nz-form-label>
+      <nz-form-control [nzSpan]="16">
         <nz-slider formControlName="width" [nzMax]="1000"></nz-slider>
       </nz-form-control>
     </nz-form-item>
 
     <nz-form-item>
-      <nz-form-label [nzSpan]="4">{{ $t('_bgColor') }}</nz-form-label>
-      <nz-form-control [nzSpan]="20">
+      <nz-form-label [nzSpan]="8">{{ $t('_bgColor') }}</nz-form-label>
+      <nz-form-control [nzSpan]="16">
         <nz-color-picker nzTrigger="hover" formControlName="bgColor" />
       </nz-form-control>
       <div>
